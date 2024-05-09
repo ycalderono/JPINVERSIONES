@@ -37,22 +37,35 @@ const authOptions = {
           console.log("No user found.");
           return null;
         }
-
-        
       },
     }),
   ],
   pages: {
     signIn: "/auth/signin",
-    error: "/auth/signin", // Redirigir a /auth/signin si hay un error
+    error: "/auth/signin",
   },
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 1 día de duración
   },
   secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async session({ session, token }) {
+      // Añade el `id` desde el token a la sesión
+      session.user.id = token.sub;
+      return session;
+    },
+    async jwt({ token, user }) {
+      // Añadir `id` al token si está disponible
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    },
+  },
 };
 
-// Exporta directamente el manejador
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+
+

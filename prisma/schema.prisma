@@ -9,19 +9,31 @@ generator client {
 }
 
 model Purchase {
-  id         Int      @id @default(autoincrement())
-  fullName   String
-  email      String
-  address    String
-  city       String
-  ticketType String
+  id             Int                 @id @default(autoincrement())
+  userId         Int
+  usuario        Usuario             @relation(fields: [userId], references: [id])
+  raffleType     String
+  selectedNumbers SelectedNumber[]
+  paymentMethod  String
+  totalAmount    Float               @default(0.0)
+  paymentStatus  String              @default("pending")
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model SelectedNumber {
+  id          Int      @id @default(autoincrement())
+  purchaseId  Int
+  purchase    Purchase @relation(fields: [purchaseId], references: [id])
+  number      String
 }
 
 model Usuario {
-  id          Int      @id @default(autoincrement())
-  fullName    String
-  email       String   @unique
-  idNumber    String   @unique
-  address     String?
-  phone       String?
+  id        Int        @id @default(autoincrement())
+  fullName  String
+  email     String     @unique
+  idNumber  String     @unique
+  address   String?
+  phone     String?
+  purchases Purchase[]
 }

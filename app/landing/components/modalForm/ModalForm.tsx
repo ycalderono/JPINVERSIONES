@@ -10,18 +10,30 @@ import colombia from '@/app/data/colombia';
 import PaymentMethodsView from './views/PaymentMethodsView';
 import SummaryView from './views/SummaryView';
 import ConfirmationView from './views/ConfirmationView';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation'; 
 
-// Función para generar números sugeridos
-const generateSuggestedNumbers = (setSuggestedNumbers) => {
-  const uniqueNumbers = new Set();
-  while (uniqueNumbers.size < 5) {
-    const randomNumber = Math.floor(1000 + Math.random() * 9000).toString();
-    uniqueNumbers.add(randomNumber);
-  }
-  setSuggestedNumbers([...uniqueNumbers]);
-};
+
 
 export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
+  const router = useRouter(); // Inicializa el enrutador aquí
+  // Declaración de estados
+  const { data: session, status } = useSession();
+  const isLoading = status === 'loading';
+  const isAuthenticated = status === 'authenticated';
+
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
+
+
+  if (status === "authenticated") {
+    console.log("Usuario autenticado:", session.user);
+    // Accede al `id` del usuario con `session.user.id`
+  } else if (status === "unauthenticated") {
+    console.log("Usuario no autenticado.");
+  }
+
+
   // Declaración de los estados
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -34,11 +46,14 @@ export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
   const [suggestions, setSuggestions] = useState([]);
   const [allCities, setAllCities] = useState([]);
   const [step, setStep] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState(''); // Asegúrate de definir este estado aquí
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [selectedNumbers, setSelectedNumbers] = useState([]);
 
 
   // Estados para la selección de números
   const [preferredNumber, setPreferredNumber] = useState('');
-  const [selectedNumbers, setSelectedNumbers] = useState([]);
+
   const [suggestedNumbers, setSuggestedNumbers] = useState([]);
 
   // Función para añadir un número preferido
@@ -48,6 +63,16 @@ export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
       setPreferredNumber(''); // Restablecer el valor después de añadir
     }
   };
+
+  // Función para generar números sugeridos
+const generateSuggestedNumbers = (setSuggestedNumbers) => {
+  const uniqueNumbers = new Set();
+  while (uniqueNumbers.size < 5) {
+    const randomNumber = Math.floor(1000 + Math.random() * 9000).toString();
+    uniqueNumbers.add(randomNumber);
+  }
+  setSuggestedNumbers([...uniqueNumbers]);
+};
   
   // Función para seleccionar un número sugerido
   const selectSuggestedNumber = (num) => {
@@ -209,6 +234,45 @@ export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
       setStep(6);
     };
 
+    const handleConfirmPurchase = async () => {
+      try {
+        const response = await fetch('/api/purchase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: session.user.id,
+            raffleType,
+            selectedNumbers,
+            paymentMethod,
+            totalAmount,
+          }),
+        });
+  
+        const data = await response.json();
+  
+        if (data.success) {
+          console.log('Compra guardada con éxito:', data.purchase);
+          setHasSubmitted(true);
+          onOpenChange(false); // Cierra el modal
+          router.push('/profile'); // Redirige al perfil
+        } else {
+          console.error('Error al guardar la compra:', data.error);
+        }
+      } catch (error) {
+        console.error('Error al guardar la compra:', error);
+      }
+    };
+
+    const handlePurchaseSubmission = () => {
+      setHasSubmitted(true); // Marca la compra como enviada
+    };
+  
+    const handleClose = () => {
+      // Lógica para cerrar el modal
+      onOpenChange(false);
+    };
   
 
   return (
@@ -262,7 +326,15 @@ export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
                   onSubmit={handleIdLogin}
                 />
               ) : step === 6 ? (
-                <ConfirmationView onClose={onClose} />
+                <ConfirmationView
+                  onClose={onClose}
+                  userId={session.user.id}
+                  raffleType={raffleType}
+                  selectedNumbers={selectedNumbers}
+                  paymentMethod={paymentMethod}
+                  totalAmount={totalAmount}
+                  onPurchaseSubmission={() => setHasSubmitted(true)}
+                />
               ) : (
                 // Otros componentes según el valor de `step`
                 <div>No hay vista definida para este paso.</div>
@@ -287,7 +359,9 @@ export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
                 onSubmit={() => goToNextStep(6)}
                 disabled={false}
               />
-            )  : null}
+            )  :step === 6 ? (
+              <FooterButtons onClose={() => onOpenChange(false)} onSubmit={handleConfirmPurchase} submitText="Ir al Perfil" disabled={hasSubmitted} />
+            ) : null}
           </ModalFooter>
           </>
         )}

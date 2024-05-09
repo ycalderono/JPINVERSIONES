@@ -1,23 +1,36 @@
-// app/api/purchase/route.ts
+// api/purchase/route.ts
+
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request) {
-    const data = await request.json();
-    const { fullName, email, address, city, ticketType } = data;
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { userId, raffleType, selectedNumbers, paymentMethod, totalAmount } = body;
 
-    // Guarda los datos en la base de datos
+    // Verificar si el `userId` es válido
+    if (!userId || typeof userId !== 'number') {
+      return NextResponse.json({ success: false, error: 'No se proporcionó un identificador de usuario válido' }, { status: 400 });
+    }
+
+    // Crear la nueva compra
     const purchase = await prisma.purchase.create({
-        data: {
-            fullName,
-            email,
-            address,
-            city,
-            ticketType,
+      data: {
+        userId,
+        raffleType,
+        selectedNumbers: {
+          create: selectedNumbers.map((num) => ({ number: num })),
         },
+        paymentMethod,
+        totalAmount,
+      },
     });
 
     return NextResponse.json({ success: true, purchase });
+  } catch (error) {
+    console.error('Error al guardar la compra:', error);
+    return NextResponse.json({ success: false, error: error.message });
+  }
 }
