@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:latest
+    container_name: my-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: my-secret-pw  # Contraseña para el usuario root
+      MYSQL_DATABASE: mydatabase         # Base de datos por defecto
+      MYSQL_USER: user                   # Usuario personalizado
+      MYSQL_PASSWORD: userpassword       # Contraseña del usuario
+    ports:
+      - "3306:3306"                      # Expone el puerto de MySQL
+    volumes:
+      - mysql-data:/var/lib/mysql        # Permite la persistencia de datos
+
+volumes:
+  mysql-data:
