@@ -1,40 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation'; 
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/modal';
-import FooterButtons from './FooterButtons';
 import UserInfoView from './views/UserInfoView';
-import LoginWithIdView from './views/LoginWithIdView';
+import { filterCities } from '../utils/cityHelpers';
+import FooterButtons from './FooterButtons';
 import NumberSelectionView from './views/NumberSelectionView';
 import { signIn } from 'next-auth/react';
-import { filterCities, selectCity } from '../utils/cityHelpers';
 import colombia from '@/app/data/colombia';
+import LoginWithIdView from './views/LoginWithIdView';
 import PaymentMethodsView from './views/PaymentMethodsView';
 import SummaryView from './views/SummaryView';
 import ConfirmationView from './views/ConfirmationView';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation'; 
 
+export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
+  console.log("Package details:", packageDetails);
 
-
-export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
-  const router = useRouter(); // Inicializa el enrutador aquí
-  // Declaración de estados
-  const { data: session, status } = useSession();
-  const isLoading = status === 'loading';
-  const isAuthenticated = status === 'authenticated';
-
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-
-
-
-  if (status === "authenticated") {
-    console.log("Usuario autenticado:", session.user);
-    // Accede al `id` del usuario con `session.user.id`
-  } else if (status === "unauthenticated") {
-    console.log("Usuario no autenticado.");
-  }
-
-
-  // Declaración de los estados
+  // Extrayendo los detalles del paquete e inicializando las variables de estado para el formulario de inicio de sesión
+  const { title: raffleType, price: totalAmount } = packageDetails || {};
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
@@ -45,55 +31,18 @@ export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
   const [cityQuery, setCityQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [allCities, setAllCities] = useState([]);
-  const [step, setStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState(''); // Asegúrate de definir este estado aquí
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [selectedNumbers, setSelectedNumbers] = useState([]);
-
-
-  // Estados para la selección de números
   const [preferredNumber, setPreferredNumber] = useState('');
-
+  const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [suggestedNumbers, setSuggestedNumbers] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  // Función para añadir un número preferido
-  const addPreferredNumber = () => {
-    if (preferredNumber && !selectedNumbers.includes(preferredNumber)) {
-      setSelectedNumbers([...selectedNumbers, preferredNumber]);
-      setPreferredNumber(''); // Restablecer el valor después de añadir
-    }
+
+  const selectCity = (city) => {
+    setCityQuery(city.name);
+    setSuggestions([]);
   };
 
-  // Función para generar números sugeridos
-const generateSuggestedNumbers = (setSuggestedNumbers) => {
-  const uniqueNumbers = new Set();
-  while (uniqueNumbers.size < 5) {
-    const randomNumber = Math.floor(1000 + Math.random() * 9000).toString();
-    uniqueNumbers.add(randomNumber);
-  }
-  setSuggestedNumbers([...uniqueNumbers]);
-};
-  
-  // Función para seleccionar un número sugerido
-  const selectSuggestedNumber = (num) => {
-    if (!selectedNumbers.includes(num)) {
-      setSelectedNumbers([...selectedNumbers, num]);
-    }
-  };
-
-  // Generar números sugeridos al montar el componente
-  useEffect(() => {
-    generateSuggestedNumbers(setSuggestedNumbers);
-  }, []);
-  
-
-  // Llenar `allCities` al cargar el componente
-  useEffect(() => {
-    const cities = colombia.allCities(); // Obtener todas las ciudades
-    setAllCities(cities); // Establecerlas en el estado
-  }, []);
-
-  // Funciones de manejo
   const handleEmailChange = (setEmail, setIsEmailMatch, confirmEmail) => (e) => {
     const email = e.target.value;
     setEmail(email);
@@ -114,22 +63,10 @@ const generateSuggestedNumbers = (setSuggestedNumbers) => {
     setSuggestions(filteredSuggestions);
   };
 
-  const checkIfEmailExists = async (email) => {
-    try {
-      const response = await fetch(`/api/check-email?email=${encodeURIComponent(email)}`);
-      if (!response.ok) {
-        console.error("Error al buscar el correo");
-        return false;
-      }
-  
-      const result = await response.json();
-      return result.exists;
-    } catch (error) {
-      console.error("Error durante la verificación de correo", error);
-      return false;
-    }
-  };
-  
+  useEffect(() => {
+    const cities = colombia.allCities(); // Obtener todas las ciudades
+    setAllCities(cities); // Establecerlas en el estado
+  }, []);
 
   const handleConfirmEmailBlur = async () => {
     // Realiza la llamada solo si hay un valor en `confirmEmail`
@@ -145,26 +82,45 @@ const generateSuggestedNumbers = (setSuggestedNumbers) => {
     }
   };
 
-  const handleIdLogin = async (idNumber) => {
-    const result = await signIn("credentials", {
-      email: confirmEmail, // Usa el correo confirmado
-      idNumber,
-      redirect: false, // Evitar la redirección automática
-    });
+  const checkIfEmailExists = async (email) => {
+    try {
+      const response = await fetch(`/api/check-email?email=${encodeURIComponent(email)}`);
+      if (!response.ok) {
+        console.error("Error al buscar el correo");
+        return false;
+      }
   
-    if (result.ok) {
-      console.log("Inicio de sesión exitoso.");
-      // Actualiza el paso o muestra una vista diferente después de iniciar sesión
-      setStep(2); // Por ejemplo, muestra la vista de selección de números
-    } else {
-      alert("Inicio de sesión fallido. Verifica tu número de documento.");
+      const result = await response.json();
+      return result.exists;
+    } catch (error) {
+      console.error("Error durante la verificación de correo", error);
+      return false;
     }
   };
-  
 
-  const selectCity = (city) => {
-    setCityQuery(city.name);
-    setSuggestions([]);
+  // Función para añadir un número preferido
+  const addPreferredNumber = () => {
+    if (preferredNumber && !selectedNumbers.includes(preferredNumber)) {
+      setSelectedNumbers([...selectedNumbers, preferredNumber]);
+      setPreferredNumber(''); // Restablecer el valor después de añadir
+    }
+  };
+
+  // Función para seleccionar un número sugerido
+  const selectSuggestedNumber = (num) => {
+    if (!selectedNumbers.includes(num)) {
+      setSelectedNumbers([...selectedNumbers, num]);
+    }
+  };
+
+        // Función para generar números sugeridos
+  const generateSuggestedNumbers = (setSuggestedNumbers) => {
+    const uniqueNumbers = new Set();
+    while (uniqueNumbers.size < 5) {
+      const randomNumber = Math.floor(1000 + Math.random() * 9000).toString();
+      uniqueNumbers.add(randomNumber);
+    }
+    setSuggestedNumbers([...uniqueNumbers]);
   };
 
   const goToNextStep = async (newStep) => {
@@ -204,12 +160,10 @@ const generateSuggestedNumbers = (setSuggestedNumbers) => {
         return;
       }
     }
-  
+
     // Cambiar a la siguiente vista
     setStep(newStep);
   };
-  
-  
 
   const handleSubmit = async (data) => {
     const response = await fetch("/api/usuarios", {
@@ -222,58 +176,58 @@ const generateSuggestedNumbers = (setSuggestedNumbers) => {
     return result.success;
   };
 
-  // Función para manejar el método de pago seleccionado
-  const handlePaymentMethod = () => {
-    // Aquí puedes añadir más lógica, como guardar el método de pago seleccionado
-    // o simplemente cambiar el paso a la siguiente vista.
-    setStep(4); // Asumimos que el siguiente paso es 4 (resumen)
+  // Generar números sugeridos al montar el componente
+  useEffect(() => {
+    generateSuggestedNumbers(setSuggestedNumbers);
+  }, []);
+
+  
+  const handleIdLogin = async (idNumber) => {
+    const result = await signIn("credentials", {
+      email: confirmEmail, // Usa el correo confirmado
+      idNumber,
+      redirect: false, // Evitar la redirección automática
+    });
+  
+    if (result.ok) {
+      console.log("Inicio de sesión exitoso.");
+      // Actualiza el paso o muestra una vista diferente después de iniciar sesión
+      setStep(2); // Por ejemplo, muestra la vista de selección de números
+    } else {
+      alert("Inicio de sesión fallido. Verifica tu número de documento.");
+    }
   };
 
-    // Función para cambiar al paso de confirmación
-    const handleSummaryToConfirmation = () => {
-      setStep(6);
-    };
+  const handlePaymentMethod = (method) => {
+    setPaymentMethod(method); // Guarda el método de pago seleccionado
+    setStep(4); // Suponiendo que el paso 4 es el resumen
+  };
 
-    const handleConfirmPurchase = async () => {
-      try {
-        const response = await fetch('/api/purchase', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: session.user.id,
-            raffleType,
-            selectedNumbers,
-            paymentMethod,
-            totalAmount,
-          }),
-        });
-  
-        const data = await response.json();
-  
-        if (data.success) {
-          console.log('Compra guardada con éxito:', data.purchase);
-          setHasSubmitted(true);
-          onOpenChange(false); // Cierra el modal
-          router.push('/profile'); // Redirige al perfil
-        } else {
-          console.error('Error al guardar la compra:', data.error);
-        }
-      } catch (error) {
-        console.error('Error al guardar la compra:', error);
+  const handleConfirmPurchase = async () => {
+    try {
+      const response = await fetch('/api/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: session.user.id,
+          raffleType,
+          selectedNumbers,
+          paymentMethod,
+          totalAmount,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log('Compra guardada con éxito:', data.purchase);
+        onOpenChange(false); // Cierra el modal
+        router.push('/profile'); // Redirige al perfil
+      } else {
+        console.error('Error al guardar la compra:', data.error);
       }
-    };
-
-    const handlePurchaseSubmission = () => {
-      setHasSubmitted(true); // Marca la compra como enviada
-    };
-  
-    const handleClose = () => {
-      // Lógica para cerrar el modal
-      onOpenChange(false);
-    };
-  
+    } catch (error) {
+      console.error('Error al guardar la compra:', error);
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
@@ -317,52 +271,44 @@ const generateSuggestedNumbers = (setSuggestedNumbers) => {
                   selectSuggestedNumber={selectSuggestedNumber}
                 />
               ) : step === 3 ? (
-                <PaymentMethodsView onBancolombiaClick={handlePaymentMethod} />
+                <PaymentMethodsView onPaymentSelect={handlePaymentMethod} />
               ) : step === 4 ? (
                 <SummaryView raffleType={raffleType} selectedNumbers={selectedNumbers} />
               ) : step === 5 ? (
-                <LoginWithIdView
-                  email={confirmEmail}
-                  onSubmit={handleIdLogin}
+                  <LoginWithIdView
+                    email={confirmEmail}
+                    onSubmit={handleIdLogin}
                 />
               ) : step === 6 ? (
-                <ConfirmationView
-                  onClose={onClose}
-                  userId={session.user.id}
-                  raffleType={raffleType}
-                  selectedNumbers={selectedNumbers}
-                  paymentMethod={paymentMethod}
-                  totalAmount={totalAmount}
-                  onPurchaseSubmission={() => setHasSubmitted(true)}
-                />
+                <ConfirmationView/>
               ) : (
                 // Otros componentes según el valor de `step`
                 <div>No hay vista definida para este paso.</div>
               )}
             </ModalBody>
             <ModalFooter>
-            {step === 1 ? (
-              <FooterButtons
-                onClose={onClose}
-                onSubmit={() => goToNextStep(2)}
-                disabled={false}
-              />
-            ) : step === 2 ? (
-              <FooterButtons
-                onClose={onClose}
-                onSubmit={() => goToNextStep(3)}
-                disabled={false}
-              />
-            ) : step === 4 ? (
-              <FooterButtons
-                onClose={onClose}
-                onSubmit={() => goToNextStep(6)}
-                disabled={false}
-              />
-            )  :step === 6 ? (
-              <FooterButtons onClose={() => onOpenChange(false)} onSubmit={handleConfirmPurchase} submitText="Ir al Perfil" disabled={hasSubmitted} />
-            ) : null}
-          </ModalFooter>
+              {step === 1 ? (
+                <FooterButtons
+                  onClose={onClose}
+                  onSubmit={() => goToNextStep(2)}
+                  disabled={false}
+                />
+              ) : step === 2 ? (
+                <FooterButtons
+                  onClose={onClose}
+                  onSubmit={() => goToNextStep(3)}
+                  disabled={false}
+                />
+              ) : step === 4 ? (
+                <FooterButtons
+                  onClose={onClose}
+                  onSubmit={() => goToNextStep(6)}
+                  disabled={false}
+                />
+              )  :step === 6 ? (
+                <FooterButtons onClose={() => onOpenChange(false)} onSubmit={handleConfirmPurchase} submitText="Ir al Perfil" disabled={hasSubmitted} />
+              ) : null}
+            </ModalFooter>
           </>
         )}
       </ModalContent>
@@ -376,330 +322,10 @@ const generateSuggestedNumbers = (setSuggestedNumbers) => {
 
 
 
-// // components/RaffleModal/RaffleModal.js
-// import React, { useState, useEffect } from 'react';
-// import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/modal';
-// import FooterButtons from './FooterButtons';
-// import UserInfoView from './views/UserInfoView';
-// import NumberSelectionView from './views/NumberSelectionView';
-// import PaymentMethodsView from './views/PaymentMethodsView';
-// import SummaryView from './views/SummaryView';
-// import ConfirmationView from './views/ConfirmationView';
-// import colombia from '@/app/data/colombia';
-// import { handleEmailChange, handleConfirmEmailChange } from '../utils/formHandlers';
-// import { filterCities, selectCity } from '../utils/cityHelpers';
-// import { generateSuggestedNumbers, addPreferredNumber, selectSuggestedNumber } from '../utils/numberHelpers';
-// import { signIn } from "next-auth/react";
-// import LoginWithIdView from './views/LoginWithIdView'; // Importar la nueva vist
-
-// // Función para enviar datos a la ruta `/api/usuarios`
-// const handleSubmit = async (data) => {
-//   const response = await fetch("/api/usuarios", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify(data),
-//   });
-
-//   const result = await response.json();
-//   return result.success;
-// };
-
-// const checkIfEmailExists = async (email) => {
-//   const response = await fetch(`/api/check-email?email=${encodeURIComponent(email)}`);
-//   const result = await response.json();
-//   console.log("Este es el resultado:", result);
-//   return result.exists;
-// };
 
 
-// export default function RaffleModal({ isOpen, onOpenChange, raffleType }) {
-//   // Estados generales para la vista 1
-//   const [fullName, setFullName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [confirmEmail, setConfirmEmail] = useState('');
-//   const [isEmailMatch, setIsEmailMatch] = useState(true);
-//   const [phone, setPhone] = useState('');
-//   const [idNumber, setIdNumber] = useState('');
-//   const [address, setAddress] = useState('');
-//   const [cityQuery, setCityQuery] = useState('');
-//   const [suggestions, setSuggestions] = useState([]);
-//   const [allCities, setAllCities] = useState([]);
 
-//   // Estado para alternar entre vistas
-//   const [step, setStep] = useState(1);
 
-//   // Estado para el número preferido
-//   const [preferredNumber, setPreferredNumber] = useState('');
-//   const [selectedNumbers, setSelectedNumbers] = useState([]);
-//   const [suggestedNumbers, setSuggestedNumbers] = useState([]);
 
-//   // Cargar todas las ciudades al montar el componente
-//   useEffect(() => {
-//     const cities = colombia.allCities(); // Llama a `allCities` para obtener todas las ciudades
-//     setAllCities(cities);
-//   }, []);
 
-//   // Generar números aleatorios como sugerencias
-//   useEffect(() => {
-//     generateSuggestedNumbers(setSuggestedNumbers);
-//   }, []);
 
-//     // Función para manejar el evento `onBlur` en el campo de confirmación de correo
-//     const handleConfirmEmailBlur = async () => {
-//       if (email && confirmEmail && email === confirmEmail) {
-//         setIsEmailMatch(true);
-    
-//         // Verificar si el correo ya está registrado
-//         const emailExists = await checkIfEmailExists(email);
-//         if (emailExists && step < 4) { // Evita cambiar al LoginWithIdView si ya avanzaste
-//           setStep(5);
-//         }
-//       } else {
-//         setIsEmailMatch(false);
-//       }
-//     };
-    
-    
-    
-
-//   // Función para redirigir al perfil del usuario
-//   const handleProfileRedirect = async () => {
-//     await signIn("credentials", {
-//       email,
-//       idNumber,
-//       callbackUrl: "/profile", // Redirige al perfil del usuario
-//     });
-//   };
-
-//   const handleIdLogin = async (idNumber) => {
-//     // if (!idNumber) {
-//     //   alert('Por favor, ingresa tu número de documento.');
-//     //   return;
-//     // }
-  
-//     // if (!email) {
-//     //   alert('El correo electrónico no está disponible. Por favor, vuelve a ingresar tu correo.');
-//     //   return;
-//     // }
-  
-//     const result = await signIn("credentials", {
-//       email,
-//       idNumber,
-//       redirect: false, // No redirigir automáticamente
-//       callbackUrl: "/profile", // Redirigir al perfil
-//     });
-  
-//     if (result.ok) {
-//       setStep(2);
-//     } else {
-//       alert('Inicio de sesión fallido. Verifica tu número de documento.');
-//     }
-//   };
-  
-  
-//   // Filtrar ciudades según lo que el usuario está escribiendo
-//   const handleCityInputChange = (e) => {
-//     const query = e.target.value;
-//     setCityQuery(query);
-//     setSuggestions(query.length > 0 ? filterCities(allCities, query) : []);
-//   };
-
-//   // Función para cambiar al siguiente paso
-//   const goToNextStep = async (newStep) => {
-//     if (newStep === 2) {
-//       const formData = {
-//         fullName,
-//         email,
-//         idNumber,
-//         address,
-//         phone,
-//       };
-  
-//       // Guardar datos para nuevos usuarios
-//       const success = await handleSubmit(formData);
-//       if (!success) {
-//         console.error("Error al guardar la información.");
-//         return;
-//       }
-  
-//       // Iniciar sesión automáticamente para nuevos usuarios
-//       const loginResult = await signIn("credentials", {
-//         email,
-//         idNumber,
-//         redirect: false,
-//       });
-  
-//       if (!loginResult.ok) {
-//         console.error("Error al iniciar sesión automáticamente.");
-//         return;
-//       }
-//     } else if (newStep === 4 || newStep === 5) {
-//       // Verificar si el correo ya está registrado antes de ir a LoginWithIdView
-//       const emailExists = await checkIfEmailExists(email);
-//       if (!emailExists) {
-//         console.error("El correo no está registrado.");
-//         return;
-//       }
-  
-//       if (newStep === 5) {
-//         console.log("Correo ya registrado, mostrando LoginWithIdView.");
-//       }
-//     }
-  
-//     // Cambiar al siguiente paso si todo es exitoso
-//     setStep(newStep);
-//   };
-  
-  
-//   // Modal inicial con las primeras dos vistas
-// return (
-//   <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
-//     <ModalContent>
-//       {(onClose) => (
-//         <>
-//           <ModalHeader>{`Comprar ${raffleType}`}</ModalHeader>
-//           <ModalBody>
-//             {step === 1 ? (
-//               <UserInfoView
-//                 fullName={fullName}
-//                 setFullName={setFullName}
-//                 email={email}
-//                 setEmail={setEmail}
-//                 confirmEmail={confirmEmail}
-//                 setConfirmEmail={setConfirmEmail}
-//                 isEmailMatch={isEmailMatch}
-//                 setIsEmailMatch={setIsEmailMatch}
-//                 phone={phone}
-//                 setPhone={setPhone}
-//                 idNumber={idNumber}
-//                 setIdNumber={setIdNumber}
-//                 address={address}
-//                 setAddress={setAddress}
-//                 cityQuery={cityQuery}
-//                 setCityQuery={setCityQuery}
-//                 suggestions={suggestions}
-//                 selectCity={(city) => selectCity(city, setCityQuery, setSuggestions)}
-//                 handleEmailChange={handleEmailChange}
-//                 handleConfirmEmailChange={handleConfirmEmailChange}
-//                 handleCityInputChange={handleCityInputChange}
-//                 handleConfirmEmailBlur={handleConfirmEmailBlur}
-//               />
-//             ) : step === 2 ? (
-//               <NumberSelectionView
-//                 preferredNumber={preferredNumber}
-//                 setPreferredNumber={setPreferredNumber}
-//                 selectedNumbers={selectedNumbers}
-//                 addPreferredNumber={() => addPreferredNumber(preferredNumber, selectedNumbers, setSelectedNumbers, setPreferredNumber)}
-//                 suggestedNumbers={suggestedNumbers}
-//                 selectSuggestedNumber={(num) => selectSuggestedNumber(num, selectedNumbers, setSelectedNumbers)}
-//               />
-//             ) : null}
-//           </ModalBody>
-//           {/* Footer con botones para avanzar al siguiente paso */}
-//           <ModalFooter>
-//             {step === 1 ? (
-//               <FooterButtons
-//                 onClose={onClose}
-//                 onSubmit={() => goToNextStep(2)}
-//                 disabled={false}
-//               />
-//             ) : step === 2 ? (
-//               <FooterButtons
-//                 onClose={onClose}
-//                 onSubmit={() => goToNextStep(3)}
-//                 disabled={false}
-//               />
-//             ) : null}
-//           </ModalFooter>
-//         </>
-//       )}
-//     </ModalContent>
-//   </Modal>
-// );
-
-  
-
-//   return (
-//     <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="center">
-//       <ModalContent>
-//         {(onClose) => (
-//           <>
-//             <ModalHeader>{`Comprar ${raffleType}`}</ModalHeader>
-//             <ModalBody>
-//               {step === 1 ? (
-//                 <UserInfoView
-//                   fullName={fullName}
-//                   setFullName={setFullName}
-//                   email={email}
-//                   setEmail={setEmail}
-//                   confirmEmail={confirmEmail}
-//                   setConfirmEmail={setConfirmEmail}
-//                   isEmailMatch={isEmailMatch}
-//                   setIsEmailMatch={setIsEmailMatch}
-//                   phone={phone}
-//                   setPhone={setPhone}
-//                   idNumber={idNumber}
-//                   setIdNumber={setIdNumber}
-//                   address={address}
-//                   setAddress={setAddress}
-//                   cityQuery={cityQuery}
-//                   setCityQuery={setCityQuery}
-//                   suggestions={suggestions}
-//                   selectCity={(city) => selectCity(city, setCityQuery, setSuggestions)}
-//                   handleEmailChange={handleEmailChange}
-//                   handleConfirmEmailChange={handleConfirmEmailChange}
-//                   handleCityInputChange={handleCityInputChange}
-//                   handleConfirmEmailBlur={handleConfirmEmailBlur}
-//                 />
-//               ) : step === 2 ? (
-//                 <NumberSelectionView
-//                   preferredNumber={preferredNumber}
-//                   setPreferredNumber={setPreferredNumber}
-//                   selectedNumbers={selectedNumbers}
-//                   addPreferredNumber={() => addPreferredNumber(preferredNumber, selectedNumbers, setSelectedNumbers, setPreferredNumber)}
-//                   suggestedNumbers={suggestedNumbers}
-//                   selectSuggestedNumber={(num) => selectSuggestedNumber(num, selectedNumbers, setSelectedNumbers)}
-//                 />
-//               ) : step === 3 ? (
-//                 <PaymentMethodsView onBancolombiaClick={() => goToNextStep(4)} />
-//               ) : step === 4 ? (
-//                 <SummaryView raffleType={raffleType} selectedNumbers={selectedNumbers} />
-//               ) : step === 5 ? ( // Nuevo paso para el LoginWithIdView
-//                 <LoginWithIdView
-//                   email={email}
-//                   onSubmit={handleIdLogin}
-//                   onBack={() => setStep(1)} // Permite regresar al primer paso
-//                 />
-//               ) : (
-//                 <ConfirmationView onClose={onClose} />
-//               )}
-//             </ModalBody>
-//             {step !== 3 && (
-//               <ModalFooter>
-//               {step === 1 ? (
-//                 <FooterButtons
-//                   onClose={onClose}
-//                   onSubmit={() => goToNextStep(2)}
-//                   disabled={false}
-//                 />
-//               ) : step === 2 ? (
-//                 <FooterButtons
-//                   onClose={onClose}
-//                   onSubmit={() => goToNextStep(3)}
-//                   disabled={false}
-//                 />
-//               ) : step === 4 ? (
-//                 <FooterButtons
-//                   onClose={onClose}
-//                   onSubmit={() => goToNextStep(5)} // Continuar al paso de confirmación
-//                   disabled={false}
-//                 />
-//               ) : null}
-//             </ModalFooter>
-//             )}
-//           </>
-//         )}
-//       </ModalContent>
-//     </Modal>
-//   );
-// }

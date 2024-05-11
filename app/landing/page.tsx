@@ -15,9 +15,17 @@ export default function LandingPage() {
   const { isOpen, onOpen, onClose } = useDisclosure(); // Usar useDisclosure
   const [selectedPackage, setSelectedPackage] = useState('');
 
-    const handlePurchaseClick = (packageName) => {
-        setSelectedPackage(packageName);
-        onOpen(); // Abrir el modal usando la función de useDisclosure
+  const totalTickets = 10000;
+
+  const packageOptions = [
+    { title: "Doble Oportunidad", tickets: 2, price: 5000, isPopular: false, discount: 0 },
+    { title: "Combo de la Fortuna", tickets: 5, price: 5000, isPopular: false, discount: 0 },
+    { title: "Gran Premio Royale", tickets: 10, price: 5000, isPopular: true, discount: 20 }
+];
+
+    const handlePurchaseClick = (packageDetails) => {
+        setSelectedPackage(packageDetails);
+        onOpen(); // Abrir el modal
     };
 
     const closeModal = () => {
@@ -41,9 +49,17 @@ export default function LandingPage() {
                     ¡<span className="text-custom-pink">Compra</span> tus puestos fácilmente!
                 </h2>
                 <div className="flex flex-col md:flex-row justify-center items-center my-5 gap-5">
-                    <OptionCard title="Doble Oportunidad" tickets={2} price={5000} isPopular={false} discount={0} onPurchaseClick={handlePurchaseClick} />
-                    <OptionCard title="Combo de la Fortuna" tickets={5} price={5000} isPopular={false} discount={0} onPurchaseClick={handlePurchaseClick} />
-                    <OptionCard title="Gran Premio Royale" tickets={10} price={5000} isPopular={true} discount={20} onPurchaseClick={handlePurchaseClick} />
+                    {packageOptions.map((option) => (
+                        <OptionCard
+                            key={option.title} // Asegúrate de tener una clave única para cada elemento
+                            title={option.title}
+                            tickets={option.tickets}
+                            price={option.price}
+                            isPopular={option.isPopular}
+                            discount={option.discount}
+                            onPurchaseClick={() => handlePurchaseClick(option)}
+                        />
+                    ))}
                 </div>
                 <div className="flex flex-row md:flex-row justify-center items-center my-5 gap-5">
                     <AhorroAlaMano className="size-32 my-5" />
@@ -51,7 +67,7 @@ export default function LandingPage() {
                 </div>
             </div>
             {/* Añadir el Modal */}
-            <RaffleModal isOpen={isOpen} onOpenChange={onClose} raffleType={selectedPackage} />
+            <RaffleModal isOpen={isOpen} onOpenChange={onClose} packageDetails={selectedPackage} />
         </React.Fragment>
     );
 }

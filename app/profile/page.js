@@ -4,7 +4,8 @@
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect } from "react";
-
+import RifasList from "./components/RifasList";
+import UserProfileCard from "./components/UserProfileCard";
 export default function ProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -27,6 +28,8 @@ export default function ProfilePage() {
       <div>
         <h1>Bienvenido, {session.user.name}</h1>
         <p>Correo electrónico: {session.user.email}</p>
+        <UserProfileCard />
+        <RifasList />
         <button
           onClick={() => signOut({ callbackUrl: "/auth/signin" })} // Redirige a la página de inicio de sesión
         >
