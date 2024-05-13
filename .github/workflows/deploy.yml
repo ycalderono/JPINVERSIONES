@@ -1,10 +1,9 @@
-# .github/workflows/deploy.yml
 name: Deploy to Production
 
 on:
   push:
     branches:
-      - master  # El flujo de trabajo se activará en el push a la rama main
+      - master  # El flujo de trabajo se activará en el push a la rama master
 
 jobs:
   build-and-deploy:
@@ -12,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: '18.x'  # Usa Node.js 18.x
 
     - name: Install dependencies
       run: npm install
@@ -36,4 +35,4 @@ jobs:
         TARGET: "/home/debian/JPINVERSIONES"
 
     - name: Restart PM2
-      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
+      run: ssh -i ~/.ssh/id_rsa debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
