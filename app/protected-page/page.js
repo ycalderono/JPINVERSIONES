@@ -1,17 +1,27 @@
-// app/protected-page/page.js
-import { useSession, signIn } from "next-auth/react";
+'use client';
 
-export default function ProtectedPage() {
-  const { data: session, status } = useSession();
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+function ProtectedPage() {
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (!session) {
+      // Redirigir o mostrar mensaje de error si no hay sesión
+    }
+  }, [session]);
 
   if (!session) {
-    signIn(); // Redirige al inicio de sesión
-    return null;
+    return <p>Cargando...</p>;
   }
 
-  return <div>Welcome, {session.user.name}!</div>;
+  return (
+    <div>
+      <h1>Bienvenido, {session.user.name}</h1>
+      {/* El contenido protegido aquí */}
+    </div>
+  );
 }
+
+export default ProtectedPage;

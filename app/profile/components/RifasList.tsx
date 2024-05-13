@@ -4,7 +4,7 @@ import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from 
 import { useSession } from "next-auth/react";
 import { Button } from "@nextui-org/button";
 import { MdUpload } from 'react-icons/md';
-import {Tooltip} from "@nextui-org/tooltip";
+import { Tooltip } from "@nextui-org/tooltip";
 
 // Define el tipo de datos de las rifas (ajusta según tu esquema de datos)
 interface Raffle {
@@ -30,18 +30,18 @@ const RifasList: React.FC = () => {
 
   const fetchRaffles = async () => {
     if (!session) return; // Asegúrate de que la sesión esté disponible
-  
+
     try {
       const response = await fetch(`/api/raffles?userId=${session.user.id}`, { // Incluye el ID del usuario en la URL
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.accessToken}`, // Opcional: incluir token si lo usas para autenticación
+          // Omitido 'Authorization': `Bearer ${session.accessToken}`, // Opcional: incluir token si lo usas para autenticación
         },
       });
       if (!response.ok) {
         throw new Error('Error al cargar las rifas');
       }
-  
+
       const data = await response.json();
       setRaffles(data); // Asegúrate de que el formato del JSON es compatible
       setIsLoading(false);
@@ -50,23 +50,18 @@ const RifasList: React.FC = () => {
       setIsLoading(false);
     }
   };
-  
 
   useEffect(() => {
     if (session) {
       fetchRaffles();
     }
-  }, [session]);
+  }, [session, fetchRaffles]);
+  
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     setFile(file);
   };
-
-  // Función para obtener los datos de las rifas desde una API (ajusta la URL a la API correcta)
-
-
-
 
   if (isLoading) {
     return <p>Cargando rifas...</p>;
@@ -93,34 +88,29 @@ const RifasList: React.FC = () => {
             <TableCell >{raffle.id}</TableCell>
             <TableCell>{raffle.raffleType}</TableCell>
             <TableCell>{raffle.paymentMethod}</TableCell>
-            <TableCell>{raffle.totalAmount.toFixed(2)}</TableCell>            
+            <TableCell>{raffle.totalAmount.toFixed(2)}</TableCell>
             <TableCell>{raffle.paymentStatus}</TableCell>
             <TableCell>{new Date(raffle.createdAt).toLocaleString()}</TableCell>
             <TableCell>
               {raffle.paymentStatus === 'pending' ? (
                 <Tooltip content="Subir comprobante">
-                  <Button  onClick={() => alert("Subir comprobante")}>
+                  <Button onClick={() => alert("Subir comprobante")}>
                     <MdUpload size="1.5rem" />
                   </Button>
                 </Tooltip>
               ) : (
                 <Tooltip content="Subir comprobante">
-                  <Button  disabled>
+                  <Button disabled>
                     <MdUpload size="1.5rem" color="#ccc" />
                   </Button>
-                  </Tooltip>
+                </Tooltip>
               )}
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
-
     </Table>
   );
 };
 
 export default RifasList;
-
-
-
-

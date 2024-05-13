@@ -1,9 +1,11 @@
+'use client';
+
 import React from 'react';
 import { Card, CardHeader, CardBody, CardFooter } from '@nextui-org/card';
 import { Button } from '@nextui-org/button';
 import { Divider } from '@nextui-org/divider';
 
-function OptionCard({ title, tickets, price, discount, isPopular, totalTickets = 10000, message, onPurchaseClick }) {
+function OptionCard({ title, tickets, price, discount, isPopular, totalTickets = 10000, onPurchaseClick }) {
     // Cálculo del precio final considerando el descuento
     const finalPrice = discount ? price * tickets * (1 - discount / 100) : price * tickets;
 
@@ -37,7 +39,7 @@ function OptionCard({ title, tickets, price, discount, isPopular, totalTickets =
                 {discount > 0 && (
                     <p className="text-sm text-green-500 font-medium">{`${discount}% de descuento`}</p>
                 )}
-                {message && <p className="text-xs text-gray-500 mt-1">{message}</p>}
+
             </CardBody>
             <CardFooter className="flex justify-center py-6">
                 <Button

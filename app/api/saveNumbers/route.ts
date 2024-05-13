@@ -22,9 +22,16 @@ export async function POST(request) {
       });
   
       return NextResponse.json({ success: true, createdNumbers });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al guardar los números seleccionados:', error);
-      return NextResponse.json({ success: false, error: error.message });
+    
+      // Comprobamos si error es realmente una instancia de Error
+      if (error instanceof Error) {
+        return NextResponse.json({ success: false, error: error.message });
+      } else {
+        // Manejo de casos donde error no es una instancia de Error
+        return NextResponse.json({ success: false, error: 'An unexpected error occurred' });
+      }
     }
   }
   

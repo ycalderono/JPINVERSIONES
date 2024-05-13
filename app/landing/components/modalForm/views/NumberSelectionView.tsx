@@ -35,7 +35,7 @@ function NumberSelectionView({ preferredNumber, setPreferredNumber, selectedNumb
       <div>
         <h4>Números Sugeridos:</h4>
         {suggestedNumbers.map((num) => (
-          <Chip key={num} clickable onClick={() => selectSuggestedNumber(num)}>
+          <Chip key={num} onClick={() => selectSuggestedNumber(num)}>
             {num}
           </Chip>
         ))}
@@ -43,6 +43,5 @@ function NumberSelectionView({ preferredNumber, setPreferredNumber, selectedNumb
     </>
   );
 }
-
 
 export default NumberSelectionView;

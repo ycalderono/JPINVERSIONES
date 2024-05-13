@@ -1,25 +1,27 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation'; 
+import { useSession, signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation'; // Cambiar a next/navigation
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/modal';
 import UserInfoView from './views/UserInfoView';
-import { filterCities } from '../utils/cityHelpers';
 import FooterButtons from './FooterButtons';
 import NumberSelectionView from './views/NumberSelectionView';
-import { signIn } from 'next-auth/react';
-import colombia from '@/app/data/colombia';
 import LoginWithIdView from './views/LoginWithIdView';
 import PaymentMethodsView from './views/PaymentMethodsView';
 import SummaryView from './views/SummaryView';
 import ConfirmationView from './views/ConfirmationView';
+import colombia from '@/app/data/colombia';
+import { filterCities } from '../utils/cityHelpers';
+
+interface City {
+  id: number;
+  name: string;
+}
 
 export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
-  console.log("Package details:", packageDetails);
-
-  // Extrayendo los detalles del paquete e inicializando las variables de estado para el formulario de inicio de sesión
-  const { title: raffleType } = packageDetails || {};
-  const router = useRouter();
-  const { data: session } = useSession();
+  const router = useRouter(); // Cambiar a useRouter de next/navigation
+  const { data: session, status } = useSession();
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,14 +32,40 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   const [address, setAddress] = useState('');
   const [cityQuery, setCityQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [allCities, setAllCities] = useState([]);
-  const [preferredNumber, setPreferredNumber] = useState('');
-  const [selectedNumbers, setSelectedNumbers] = useState([]);
-  const [suggestedNumbers, setSuggestedNumbers] = useState([]);
+  const [allCities, setAllCities] = useState<City[]>([]);
+  const [preferredNumber, setPreferredNumber] = useState<string>('');
+  const [selectedNumbers, setSelectedNumbers] = useState<string[]>([]);
+  const [suggestedNumbers, setSuggestedNumbers] = useState<string[]>([]);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const raffleType = packageDetails?.raffleType;
 
-    // Calcular el monto total
+  if (status === 'unauthenticated') {
+    console.error("No hay sesión activa.");
+  }
+
+  useEffect(() => {
+    if (colombia && colombia.allCities) {
+      const cities = colombia.allCities();
+      setAllCities(cities);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (step === 6) {
+      generateSuggestedNumbers();
+    }
+  }, [step]);
+
+  const generateSuggestedNumbers = () => {
+    const uniqueNumbers = new Set<string>();
+    while (uniqueNumbers.size < 5) {
+      const randomNumber = Math.floor(1000 + Math.random() * 9000).toString();
+      uniqueNumbers.add(randomNumber);
+    }
+    setSuggestedNumbers(Array.from(uniqueNumbers));
+  };
+
   const calculatedTotalAmount = packageDetails.price * packageDetails.tickets;
 
   const selectCity = (city) => {
@@ -60,24 +88,21 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   const handleCityInputChange = (e) => {
     const query = e.target.value;
     setCityQuery(query);
-    // Filtra la lista completa de ciudades utilizando el texto ingresado
     const filteredSuggestions = query.length > 2 ? filterCities(allCities, query) : [];
     setSuggestions(filteredSuggestions);
   };
 
   useEffect(() => {
-    const cities = colombia.allCities(); // Obtener todas las ciudades
-    setAllCities(cities); // Establecerlas en el estado
+    const cities = colombia.allCities();
+    setAllCities(cities);
   }, []);
 
   const handleConfirmEmailBlur = async () => {
-    // Realiza la llamada solo si hay un valor en `confirmEmail`
     if (confirmEmail) {
       const emailExists = await checkIfEmailExists(confirmEmail);
       if (emailExists) {
         console.log("El correo ya está registrado en la base de datos.");
         setStep(5);
-        // Realiza cualquier otra acción que necesites, como cambiar de paso o mostrar una alerta
       } else {
         console.log("El correo no está registrado.");
       }
@@ -91,7 +116,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
         console.error("Error al buscar el correo");
         return false;
       }
-  
+
       const result = await response.json();
       return result.exists;
     } catch (error) {
@@ -100,34 +125,21 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     }
   };
 
-  // Función para añadir un número preferido
   const addPreferredNumber = () => {
     if (preferredNumber && !selectedNumbers.includes(preferredNumber)) {
       setSelectedNumbers([...selectedNumbers, preferredNumber]);
-      setPreferredNumber(''); // Restablecer el valor después de añadir
+      setPreferredNumber('');
     }
   };
 
-  // Función para seleccionar un número sugerido
   const selectSuggestedNumber = (num) => {
     if (!selectedNumbers.includes(num) && selectedNumbers.length < packageDetails.tickets) {
       setSelectedNumbers([...selectedNumbers, num]);
     }
   };
 
-        // Función para generar números sugeridos
-  const generateSuggestedNumbers = (setSuggestedNumbers) => {
-    const uniqueNumbers = new Set();
-    while (uniqueNumbers.size < 5) {
-      const randomNumber = Math.floor(1000 + Math.random() * 9000).toString();
-      uniqueNumbers.add(randomNumber);
-    }
-    setSuggestedNumbers([...uniqueNumbers]);
-  };
-
   const goToNextStep = async (newStep) => {
     if (newStep === 2) {
-      // Recopilar datos para el nuevo usuario
       const formData = {
         fullName,
         email,
@@ -135,35 +147,31 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
         address,
         phone,
       };
-  
-      // Verificar si el usuario ya existe (llamando a `checkIfEmailExists`)
+
       const exists = await checkIfEmailExists(email);
       if (exists) {
         console.error("Usuario ya registrado");
         return;
       }
-  
-      // Guardar información en la base de datos
+
       const success = await handleSubmit(formData);
       if (!success) {
         console.error("Error al guardar la información.");
         return;
       }
 
-      // Iniciar sesión automáticamente para nuevos usuarios
       const loginResult = await signIn("credentials", {
         email,
         idNumber,
         redirect: false,
       });
-  
-      if (!loginResult.ok) {
+
+      if (loginResult && !loginResult.ok) {
         console.error("Error al iniciar sesión automáticamente.");
         return;
       }
     }
 
-    // Cambiar a la siguiente vista
     setStep(newStep);
   };
 
@@ -173,56 +181,58 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-  
+
     const result = await response.json();
     return result.success;
   };
 
-  // Generar números sugeridos al montar el componente
-  useEffect(() => {
-    generateSuggestedNumbers(setSuggestedNumbers);
-  }, []);
-
-  
   const handleIdLogin = async (idNumber) => {
     const result = await signIn("credentials", {
-      email: confirmEmail, // Usa el correo confirmado
+      email: confirmEmail,
       idNumber,
-      redirect: false, // Evitar la redirección automática
+      redirect: false,
     });
-  
-    if (result.ok) {
+
+    if (result && result.ok) {
       console.log("Inicio de sesión exitoso.");
-      // Actualiza el paso o muestra una vista diferente después de iniciar sesión
-      setStep(2); // Por ejemplo, muestra la vista de selección de números
+      setStep(2);
     } else {
-      alert("Inicio de sesión fallido. Verifica tu número de documento.");
+      console.error("Error al iniciar sesión.");
     }
   };
 
   const handlePaymentMethod = (method) => {
-    setPaymentMethod(method); // Guarda el método de pago seleccionado
-    setStep(4); // Suponiendo que el paso 4 es el resumen
+    setPaymentMethod(method);
+    setStep(4);
   };
 
   const handleConfirmPurchase = async () => {
     try {
+      const userId = session?.user?.id ?? 'defaultUserId';
+      if (userId === 'defaultUserId') {
+        console.error("No hay sesión activa o el usuario no está definido.");
+        return;
+      }
+
+      const purchaseDetails = {
+        userId: userId,
+        raffleType,
+        selectedNumbers,
+        paymentMethod,
+        totalAmount: calculatedTotalAmount,
+      };
+
       const response = await fetch('/api/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: session.user.id,
-          raffleType,
-          selectedNumbers,
-          paymentMethod,
-          totalAmount: calculatedTotalAmount,
-        }),
+        body: JSON.stringify(purchaseDetails),
       });
+
       const data = await response.json();
       if (data.success) {
         console.log('Compra guardada con éxito:', data.purchase);
-        onOpenChange(false); // Cierra el modal
-        router.push('/profile'); // Redirige al perfil
+        onOpenChange(false);
+        router.push('/profile');
       } else {
         console.error('Error al guardar la compra:', data.error);
       }
@@ -238,7 +248,9 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
           <>
             <ModalHeader>{`Comprar ${raffleType}`}</ModalHeader>
             <ModalBody>
-              {step === 1 ? (
+              {status === 'unauthenticated' ? (
+                <div>No hay sesión activa. Por favor, inicie sesión.</div>
+              ) : step === 1 ? (
                 <UserInfoView
                   fullName={fullName}
                   setFullName={setFullName}
@@ -278,14 +290,13 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
               ) : step === 4 ? (
                 <SummaryView raffleType={raffleType} selectedNumbers={selectedNumbers} />
               ) : step === 5 ? (
-                  <LoginWithIdView
-                    email={confirmEmail}
-                    onSubmit={handleIdLogin}
+                <LoginWithIdView
+                  email={confirmEmail}
+                  onSubmit={handleIdLogin}
                 />
               ) : step === 6 ? (
-                <ConfirmationView/>
+                <ConfirmationView />
               ) : (
-                // Otros componentes según el valor de `step`
                 <div>No hay vista definida para este paso.</div>
               )}
             </ModalBody>
@@ -308,8 +319,13 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
                   onSubmit={() => goToNextStep(6)}
                   disabled={false}
                 />
-              )  :step === 6 ? (
-                <FooterButtons onClose={() => onOpenChange(false)} onSubmit={handleConfirmPurchase} submitText="Ir al Perfil" disabled={hasSubmitted} />
+              ) : step === 6 ? (
+                <FooterButtons
+                  onClose={() => onOpenChange(false)}
+                  onSubmit={handleConfirmPurchase}
+                  submitText="Ir al Perfil"
+                  disabled={hasSubmitted}
+                />
               ) : null}
             </ModalFooter>
           </>

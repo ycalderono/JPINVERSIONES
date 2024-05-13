@@ -1,37 +1,35 @@
-"use client";
+'use client';
 
-import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import { Card } from "@nextui-org/card";
-import { useState } from "react";
+import { signIn } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
+import { Input } from '@nextui-org/input';
+import { Button } from '@nextui-org/button';
+import { Card } from '@nextui-org/card';
+import { useState, Suspense } from 'react';
 
-export default function SignInPage() {
-  const [errorMessage, setErrorMessage] = useState("");
+function SignInForm() {
+  const [errorMessage, setErrorMessage] = useState('');
   const searchParams = useSearchParams();
-  const error = searchParams.get("error");
+  const error = searchParams.get('error');
 
   const handleSignIn = async (event) => {
     event.preventDefault();
     const email = event.target.email.value;
     const idNumber = event.target.idNumber.value;
 
-    // Depura el intento de inicio de sesión
-    console.log("Attempting login with:", { email, idNumber });
+    console.log('Attempting login with:', { email, idNumber });
 
-    const result = await signIn("credentials", {
+    const result = await signIn('credentials', {
       email,
       idNumber,
       redirect: false,
-      callbackUrl: "/profile",
+      callbackUrl: '/profile',
     });
 
-    // Verifica el resultado del inicio de sesión
-    console.log("Login result:", result);
+    console.log('Login result:', result);
 
     if (!result || result.error) {
-      setErrorMessage("Credenciales incorrectas. Intenta de nuevo.");
+      setErrorMessage('Credenciales incorrectas. Intenta de nuevo.');
     } else {
       window.location.href = result.url;
     }
@@ -73,5 +71,13 @@ export default function SignInPage() {
         </form>
       </Card>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   );
 }

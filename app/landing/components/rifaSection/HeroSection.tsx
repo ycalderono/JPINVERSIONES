@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import HeroText from "./HeroText";
 import ProgressCard from "./ProgressCard";

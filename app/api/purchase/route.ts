@@ -29,8 +29,15 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, purchase });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error al guardar la compra:', error);
-    return NextResponse.json({ success: false, error: error.message });
+  
+    if (error instanceof Error) {
+      return NextResponse.json({ success: false, error: error.message });
+    } else {
+      // Puedes decidir cómo manejar los casos donde el error no es una instancia de Error
+      return NextResponse.json({ success: false, error: 'An unexpected error occurred' });
+    }
   }
+  
 }
