@@ -17,7 +17,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   console.log("Package details:", packageDetails);
 
   // Extrayendo los detalles del paquete e inicializando las variables de estado para el formulario de inicio de sesión
-  const { title: raffleType, price: totalAmount } = packageDetails || {};
+  const { title: raffleType } = packageDetails || {};
   const router = useRouter();
   const { data: session } = useSession();
   const [step, setStep] = useState(1);
@@ -37,6 +37,8 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
+    // Calcular el monto total
+  const calculatedTotalAmount = packageDetails.price * packageDetails.tickets;
 
   const selectCity = (city) => {
     setCityQuery(city.name);
@@ -108,7 +110,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
 
   // Función para seleccionar un número sugerido
   const selectSuggestedNumber = (num) => {
-    if (!selectedNumbers.includes(num)) {
+    if (!selectedNumbers.includes(num) && selectedNumbers.length < packageDetails.tickets) {
       setSelectedNumbers([...selectedNumbers, num]);
     }
   };
@@ -213,7 +215,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
           raffleType,
           selectedNumbers,
           paymentMethod,
-          totalAmount,
+          totalAmount: calculatedTotalAmount,
         }),
       });
       const data = await response.json();
@@ -269,6 +271,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
                   addPreferredNumber={addPreferredNumber}
                   suggestedNumbers={suggestedNumbers}
                   selectSuggestedNumber={selectSuggestedNumber}
+                  maxNumbers={packageDetails.tickets}
                 />
               ) : step === 3 ? (
                 <PaymentMethodsView onPaymentSelect={handlePaymentMethod} />
@@ -315,17 +318,3 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     </Modal>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

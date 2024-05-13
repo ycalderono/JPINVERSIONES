@@ -10,6 +10,8 @@ export default function ProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+
+
   // Redirigir al formulario de inicio de sesión si no hay una sesión activa.
   useEffect(() => {
     if (status === "unauthenticated") {

@@ -3,8 +3,10 @@ import { Input } from '@nextui-org/input';
 import { Button } from '@nextui-org/button';
 import { Chip } from '@nextui-org/chip';
 
-// `NumberSelectionView` actualizado
-function NumberSelectionView({ preferredNumber, setPreferredNumber, selectedNumbers, addPreferredNumber, suggestedNumbers, selectSuggestedNumber }) {
+function NumberSelectionView({ preferredNumber, setPreferredNumber, selectedNumbers, addPreferredNumber, suggestedNumbers, selectSuggestedNumber, maxNumbers }) {
+
+  // Función para verificar si se puede agregar más números
+  const canAddMoreNumbers = selectedNumbers.length < maxNumbers;
 
   return (
     <>
@@ -18,7 +20,7 @@ function NumberSelectionView({ preferredNumber, setPreferredNumber, selectedNumb
       <Button
         className="custom-pink"
         onClick={addPreferredNumber}
-        disabled={preferredNumber.length !== 4}
+        disabled={!canAddMoreNumbers || preferredNumber.length !== 4}
       >
         Añadir Número
       </Button>

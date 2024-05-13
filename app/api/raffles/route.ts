@@ -1,21 +1,28 @@
-// app/api/raffles/route.ts
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Ruta para obtener todas las rifas (compras)
-export async function GET() {
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get('userId'); // Obtener el ID del usuario desde la URL
+  console.log('userId:', userId);
+  
+  if (!userId) {
+    return NextResponse.json({ error: 'ID de usuario no proporcionado' }, { status: 400 });
+  }
+
   try {
-    // Consulta todas las compras (rifas)
+    // Consulta las compras del usuario autenticado
     const raffles = await prisma.purchase.findMany({
+      where: { userId: parseInt(userId) }, // Filtra por ID de usuario
       include: {
-        selectedNumbers: true, // Incluye la relación con los números seleccionados
-        usuario: true, // Incluye información sobre el usuario si lo necesitas
+        selectedNumbers: true, // Incluye los números seleccionados
+        usuario: true, // Incluye detalles del usuario
       },
     });
 
-    // Devuelve la respuesta en formato JSON
+    // Devuelve las rifas encontradas
     return NextResponse.json(raffles);
   } catch (error) {
     console.error('Error al obtener las rifas:', error);
