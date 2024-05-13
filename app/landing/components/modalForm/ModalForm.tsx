@@ -248,9 +248,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
           <>
             <ModalHeader>{`Comprar ${raffleType}`}</ModalHeader>
             <ModalBody>
-              {status === 'unauthenticated' ? (
-                <div>No hay sesión activa. Por favor, inicie sesión.</div>
-              ) : step === 1 ? (
+              {step === 1 ? (
                 <UserInfoView
                   fullName={fullName}
                   setFullName={setFullName}
