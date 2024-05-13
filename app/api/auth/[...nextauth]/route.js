@@ -50,17 +50,17 @@ const authOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async session({ session, token }) {
-      // Añade el `id` desde el token a la sesión
-      session.user.id = token.sub;
-      return session;
-    },
     async jwt({ token, user }) {
-      // Añadir `id` al token si está disponible
+      // Añadir `id` al token si el usuario inicia sesión
       if (user) {
-        token.sub = user.id;
+        token.sub = user.id; // Asegúrate de que `user.id` existe y se asigna a `sub`
       }
       return token;
+    },
+    async session({ session, token }) {
+      // Añade el `id` desde el token a la sesión
+      session.user.id = token.sub; // Aquí asumimos que `session.user` ya está definido
+      return session;
     },
   },
 };
