@@ -1,0 +1,39 @@
+# .github/workflows/deploy.yml
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master  # El flujo de trabajo se activará en el push a la rama main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to Server via SSH
+      uses: easingthemes/ssh-deploy@v2.1.5
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ARGS: "-rltgoDzvO"
+        SOURCE: "build/"
+        REMOTE_HOST: "192.99.145.129"
+        REMOTE_USER: "debian"
+        TARGET: "/home/debian/JPINVERSIONES"
+
+    - name: Restart PM2
+      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
