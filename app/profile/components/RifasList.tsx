@@ -28,18 +28,6 @@ const RifasList: React.FC = () => {
 
   const { data: session } = useSession();
 
-  useEffect(() => {
-    if (session) {
-      fetchRaffles();
-    }
-  }, [session]);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    setFile(file);
-  };
-
-  // Función para obtener los datos de las rifas desde una API (ajusta la URL a la API correcta)
   const fetchRaffles = async () => {
     if (!session) return; // Asegúrate de que la sesión esté disponible
   
@@ -63,6 +51,20 @@ const RifasList: React.FC = () => {
     }
   };
   
+
+  useEffect(() => {
+    if (session) {
+      fetchRaffles();
+    }
+  }, [session]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    setFile(file);
+  };
+
+  // Función para obtener los datos de las rifas desde una API (ajusta la URL a la API correcta)
+
 
 
 
