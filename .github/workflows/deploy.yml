@@ -23,16 +23,37 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-rltgoDzvO"
-        SOURCE: "./"  # Cambiar a la raíz del proyecto para incluir todos los archivos necesarios
+        SOURCE: "./"  # Incluye todos los archivos necesarios desde la raíz del proyecto
         REMOTE_HOST: "192.99.145.129"
         REMOTE_USER: "debian"
         TARGET: "/home/debian/JPINVERSIONES"
 
     - name: Install dependencies on server
-      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && npm install"
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/debian/JPINVERSIONES
+          npm install
 
     - name: Build project on server
-      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && npm run build"
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/debian/JPINVERSIONES
+          npm run build
 
     - name: Start application with PM2
-      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 start npm --name 'next-app' -- start"
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/debian/JPINVERSIONES
+          pm2 start npm --name 'next-app' -- start
