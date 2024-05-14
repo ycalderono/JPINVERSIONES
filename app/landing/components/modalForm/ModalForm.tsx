@@ -38,7 +38,10 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   const [suggestedNumbers, setSuggestedNumbers] = useState<string[]>([]);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const raffleType = packageDetails?.raffleType;
+  const raffleType = packageDetails?.title;
+
+  console.log("Selected package:", packageDetails);
+  console.log("Raffle type:", raffleType);
 
   if (status === 'unauthenticated') {
     console.error("No hay sesión activa.");

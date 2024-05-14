@@ -20,6 +20,7 @@ export default function LandingPage() {
   ];
 
   const handlePurchaseClick = (packageDetails) => {
+    console.log("Selected package:", packageDetails);
     setSelectedPackage(packageDetails);
     onOpen();
   };
@@ -28,7 +29,7 @@ export default function LandingPage() {
     <React.Fragment>
       <div className="flex flex-col items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
         <h1 className="text-6xl font-bold text-center my-5">
-          ¡<span className="text-custom-pink">Gana</span> una Moto NKD!
+          ¡<span className="text-custom-pink">Gana</span> una Moto Crypton FI!
         </h1>
       </div>
       <div className="flex flex-col md:flex-row items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
@@ -41,6 +42,7 @@ export default function LandingPage() {
         </h2>
         <div className="flex flex-col md:flex-row justify-center items-center my-5 gap-5">
           {packageOptions.map((option) => (
+            console.log(option.title),
             <OptionCard
               key={option.title}
               title={option.title}
