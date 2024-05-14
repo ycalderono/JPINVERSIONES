@@ -49,6 +49,17 @@ const authOptions = {
     strategy: "jwt",
     maxAge: 24 * 60 * 60, // 1 día de duración
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
@@ -58,7 +69,9 @@ const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.sub;
+      if (token) {
+        session.user.id = token.sub;
+      }
       return session;
     },
   },

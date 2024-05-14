@@ -1,3 +1,4 @@
+// RaffleModal component
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -45,10 +46,6 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   if (status === 'unauthenticated') {
     console.error("No hay sesión activa.");
   }
-
-  useEffect(() => {
-    console.log("Verificando sesión:", session);
-  }, [session]);
 
   useEffect(() => {
     if (colombia && colombia.allCities) {
@@ -167,13 +164,16 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
         redirect: false,
       });
 
-      if (loginResult && !loginResult.ok) {
+      if (loginResult && loginResult.ok) {
+        console.log("Inicio de sesión exitoso:", loginResult);
+        setStep(newStep);
+      } else {
         console.error("Error al iniciar sesión automáticamente.");
         return;
       }
+    } else {
+      setStep(newStep);
     }
-
-    setStep(newStep);
   };
 
   const handleSubmit = async (data) => {
@@ -187,7 +187,6 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     return result.success;
   };
 
-// Añadir un log en el manejo de inicio de sesión
   const handleIdLogin = async (idNumber) => {
     const result = await signIn("credentials", {
       email: confirmEmail,
@@ -196,10 +195,10 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     });
 
     if (result && result.ok) {
-      console.log("Inicio de sesión exitoso. Result:", result);
+      console.log("Inicio de sesión exitoso.", result);
       setStep(2);
     } else {
-      console.error("Error al iniciar sesión. Result:", result);
+      console.error("Error al iniciar sesión.", result);
     }
   };
 
