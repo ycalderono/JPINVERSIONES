@@ -18,12 +18,6 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build project
-      run: npm run build
-
     - name: Deploy to Server via SSH
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
@@ -32,10 +26,13 @@ jobs:
         SOURCE: "./"  # Cambiar a la raíz del proyecto para incluir todos los archivos necesarios
         REMOTE_HOST: "192.99.145.129"
         REMOTE_USER: "debian"
-        TARGET: "/home/debian/JPINVERSIONES/"
+        TARGET: "/home/debian/JPINVERSIONES"
 
     - name: Install dependencies on server
       run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && npm install"
+
+    - name: Build project on server
+      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && npm run build"
 
     - name: Start application with PM2
       run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 start npm --name 'next-app' -- start"
