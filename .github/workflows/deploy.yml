@@ -24,12 +24,21 @@ jobs:
     - name: Build project
       run: npm run build
 
+    - name: Add SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+
+    - name: Add SSH known hosts
+      run: ssh-keyscan 192.99.145.129 >> ~/.ssh/known_hosts
+
     - name: Deploy to Server via SSH
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-rltgoDzvO"
-        SOURCE: ".next/"  # Cambia 'build/' por '.next/'
+        SOURCE: ".next/"
         REMOTE_HOST: "192.99.145.129"
         REMOTE_USER: "debian"
         TARGET: "/home/debian/JPINVERSIONES"
