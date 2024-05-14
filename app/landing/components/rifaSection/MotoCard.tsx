@@ -16,7 +16,7 @@ function ImageCard() {
                 <Image
                     alt="Moto NKD"
                     className="object-cover"
-                    src="/NKD-125-1.png"
+                    src="/FRAY6280.png"
                 /> 
                 <CardFooter className="w-full  justify-between before:bg-white/10 border-white/10 border-1 overflow-hidden py-1 absolute before:rounded-xl rounded-large bottom-1 w-[calc(100%_-_8px)] shadow-small ml-1 z-10">
                     <ProgressCard />  {/* Ubicación de ProgressCard en el footer de la tarjeta */}

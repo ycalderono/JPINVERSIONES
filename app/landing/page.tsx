@@ -29,7 +29,7 @@ export default function LandingPage() {
     <React.Fragment>
       <div className="flex flex-col items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
         <h1 className="text-6xl font-bold text-center my-5">
-          ¡<span className="text-custom-pink">Gana</span> una Moto Crypton FI!
+          ¡<span className="text-custom-pink">Gana</span> una increíble Moto <span className="text-custom-pink">Crypton</span> FI 2025!
         </h1>
       </div>
       <div className="flex flex-col md:flex-row items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
