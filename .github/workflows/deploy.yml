@@ -48,7 +48,7 @@ jobs:
           cd /home/debian/JPINVERSIONES
           npm run build
 
-    - name: Start application with PM2
+    - name: Restart application with PM2
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
@@ -56,4 +56,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /home/debian/JPINVERSIONES
-          pm2 start npm --name 'next-app' -- start
+          pm2 restart next-app || pm2 start npm --name 'next-app' -- start
