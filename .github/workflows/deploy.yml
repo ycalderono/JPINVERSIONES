@@ -29,10 +29,13 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-rltgoDzvO"
-        SOURCE: ".next/"  
+        SOURCE: "./"  # Cambiar a la raíz del proyecto para incluir todos los archivos necesarios
         REMOTE_HOST: "192.99.145.129"
         REMOTE_USER: "debian"
-        TARGET: "/home/debian/JPINVERSIONES"
+        TARGET: "/home/debian/JPINVERSIONES/"
 
-    - name: Restart PM2
-      run: ssh -o StrictHostKeyChecking=no -i /home/runner/.ssh/deploy_key debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
+    - name: Install dependencies on server
+      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && npm install"
+
+    - name: Start application with PM2
+      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 start npm --name 'next-app' -- start"
