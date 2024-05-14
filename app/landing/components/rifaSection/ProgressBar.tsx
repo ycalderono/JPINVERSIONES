@@ -15,7 +15,7 @@ function ProgressBar({ value }) {
                 base: "w-full",  // Asegura que la base también ocupe todo el ancho
                 track: "w-full drop-shadow-md  ", // Asegura que el track ocupe todo el ancho
                 indicator: "bg-gradient-to-r from-white to-custom-pink",
-                label: "text-white/80 text-base",
+                label: "text-md",
                 value: "text-custom-pink text-base font-bold",
             }}
         />

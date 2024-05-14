@@ -7,17 +7,17 @@ import ProgressCard from "./ProgressCard";  // Importa el componente ProgressCar
 
 function ImageCard() {
   return (
-    <div className="order-1 md:order-2 w-full h-96">
-      <Card isFooterBlurred radius="lg" className="border-none h-full">
-        <div className="relative w-full h-full">
+    <div className="order-1 md:order-2 w-full">
+      <Card isFooterBlurred radius="lg" className="border-2 border-white/10 h-full">
+        <div className="w-full h-full">
           <Image
             alt="Moto NKD"
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full w-[800px] h-[400px]"
             src="/FRAY6280.png"
           />
-          <CardFooter className="absolute bottom-0 w-full justify-between bg-white/10 border-white/10 border-1 py-1 shadow-small z-10">
-            <ProgressCard />  {/* Ubicación de ProgressCard en el footer de la tarjeta */}
-          </CardFooter>
+          {/* <CardFooter className="absolute bottom-0 w-full justify-between bg-white/10 border-white/10 border-1 py-1 shadow-small z-10">
+            <ProgressCard />  
+          </CardFooter> */}
         </div>
       </Card>
     </div>

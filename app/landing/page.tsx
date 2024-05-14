@@ -8,6 +8,7 @@ import AhorroAlaMano from '../../public/bancolombia.svg';
 import Nequi from '../../public/nequi-2.svg';
 import RaffleModal from './components/modalForm/ModalForm';
 import { useDisclosure } from '@nextui-org/modal';
+import ProgressCard from "./components/rifaSection/ProgressCard";
 
 export default function LandingPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -28,19 +29,25 @@ export default function LandingPage() {
   return (
     <React.Fragment>
 
-      <div className="flex flex-row items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
-        <div className="flex flex-col items-center justify-center w-1/2 px-4 sm:px-8 md:px-12 lg:px-0">
+      <div className="flex flex-row items-center justify-center max-w-screen-lg mx-auto px-4  sm:px-8 md:px-12 lg:px-0">
+        <div className="flex flex-col items-center justify-center w-[560px] h-[400px] px-4 sm:px-8 md:px-12 lg:px-0 ">
           <ImageCard />
         </div>
-        <div className="flex flex-col items-start justify-center w-1/2 px-4 sm:px-8 md:px-12 lg:px-0 mx-5 ">
-          <div className="flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-0 max-w-90">
-            <h1 className="text-5xl font-black justify-center text-left my-5">
+
+        <div className="flex flex-col w-1/2 px-4 sm:px-8 md:px-12 lg:px-0 mx-5 ">
+          <div className="flex flex-col items-center justify-center ">
+            <h1 className="text-6xl font-black justify-center text-left ">
               ¡Gana una <br /> increíble Moto Crypton FI 2025!
             </h1>
+          </div>          
+          <div className="flex flex-col items-end justify-center ">
+            <HeroSection />
           </div>
-
-          <HeroSection />
         </div>
+      </div>
+
+      <div className="flex flex-col items-center py-10 justify-center mx-16 px-4 sm:px-8 md:px-12 lg:px-0 ">
+            <ProgressCard />
       </div>
 
       <div id="optionCardsSection" className="flex flex-col items-center justify-center my-5 max-w-6xl mx-auto">

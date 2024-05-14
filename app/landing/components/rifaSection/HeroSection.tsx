@@ -8,9 +8,13 @@ import ParticipateButton from "./ParticipateButton";
 
 function HeroSection() {
     return (
-        <div className="flex flex-col  md:items-start order-2 md:order-1 w-full " >
+    <div className="flex flex-col  md:items-start order-2 md:order-1 w-full " >
+        <div className="flex flex-col  md:items-start order-2 md:order-1 w-full h-2/3 my-5" >
             <HeroText />
+        </div>
+        <div className="flex flex-col md:items-start order-2 md:order-1 w-full h-1/3 " >
             <ParticipateButton />
+        </div>              
         </div>
     );
 }
