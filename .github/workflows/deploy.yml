@@ -3,7 +3,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - master  # El flujo de trabajo se activará en el push a la rama master
+      - master
 
 jobs:
   build-and-deploy:
@@ -11,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v2
       with:
-        node-version: '18.x'  # Usa Node.js 18.x
+        node-version: '18'
 
     - name: Install dependencies
       run: npm install
@@ -24,24 +24,16 @@ jobs:
     - name: Build project
       run: npm run build
 
-    - name: Add SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-
-    - name: Add SSH known hosts
-      run: ssh-keyscan 192.99.145.129 >> ~/.ssh/known_hosts
-
     - name: Deploy to Server via SSH
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-rltgoDzvO"
-        SOURCE: ".next/"
+        SOURCE: "./"  # Cambiar a la raíz del proyecto para incluir todos los archivos necesarios
         REMOTE_HOST: "192.99.145.129"
         REMOTE_USER: "debian"
         TARGET: "/home/debian/JPINVERSIONES"
 
     - name: Restart PM2
-      run: ssh -i ~/.ssh/id_rsa debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
+      run: ssh -o StrictHostKeyChecking=no debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
+
