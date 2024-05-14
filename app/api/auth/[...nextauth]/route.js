@@ -19,6 +19,7 @@ const authOptions = {
         console.log("Received credentials:", credentials);
 
         if (!credentials?.email || !credentials.idNumber) {
+          console.error("Faltan las credenciales.");
           throw new Error("Faltan las credenciales.");
         }
 
@@ -34,7 +35,7 @@ const authOptions = {
         if (user) {
           return { id: user.id, name: user.fullName, email: user.email };
         } else {
-          console.log("No user found.");
+          console.error("No user found.");
           return null;
         }
       },
@@ -53,12 +54,14 @@ const authOptions = {
     async jwt({ token, user }) {
       // Añadir `id` al token si el usuario inicia sesión
       if (user) {
+        console.log("User logged in, adding id to token:", user.id);
         token.sub = user.id; // Asegúrate de que `user.id` existe y se asigna a `sub`
       }
       return token;
     },
     async session({ session, token }) {
       // Añade el `id` desde el token a la sesión
+      console.log("Adding id to session:", token.sub);
       session.user.id = token.sub; // Aquí asumimos que `session.user` ya está definido
       return session;
     },
@@ -67,5 +70,3 @@ const authOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-
-
