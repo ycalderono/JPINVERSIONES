@@ -27,15 +27,22 @@ export default function LandingPage() {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
-        <h1 className="text-6xl font-bold text-center my-5">
-          ¡<span className="text-custom-pink">Gana</span> una increíble Moto <span className="text-custom-pink">Crypton</span> FI 2025!
-        </h1>
+
+      <div className="flex flex-row items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
+        <div className="flex flex-col items-center justify-center w-1/2 px-4 sm:px-8 md:px-12 lg:px-0">
+          <ImageCard />
+        </div>
+        <div className="flex flex-col items-start justify-center w-1/2 px-4 sm:px-8 md:px-12 lg:px-0 mx-5 ">
+          <div className="flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-0 max-w-90">
+            <h1 className="text-5xl font-black justify-center text-left my-5">
+              ¡Gana una <br /> increíble Moto Crypton FI 2025!
+            </h1>
+          </div>
+
+          <HeroSection />
+        </div>
       </div>
-      <div className="flex flex-col md:flex-row items-center justify-center max-w-screen-lg mx-auto px-4 sm:px-8 md:px-12 lg:px-0">
-        <HeroSection />
-        <ImageCard />
-      </div>
+
       <div id="optionCardsSection" className="flex flex-col items-center justify-center my-5 max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-center my-5">
           ¡<span className="text-custom-pink">Compra</span> tus puestos fácilmente!
