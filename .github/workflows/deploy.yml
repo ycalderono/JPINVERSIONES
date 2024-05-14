@@ -1,9 +1,10 @@
+# .github/workflows/deploy.yml
 name: Deploy to Production
 
 on:
   push:
     branches:
-      - master
+      - master  # El flujo de trabajo se activará en el push a la rama main
 
 jobs:
   build-and-deploy:
@@ -16,7 +17,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'
+        node-version: '16'
 
     - name: Install dependencies
       run: npm install
@@ -29,11 +30,10 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         ARGS: "-rltgoDzvO"
-        SOURCE: "./"  # Cambiar a la raíz del proyecto para incluir todos los archivos necesarios
+        SOURCE: "./"
         REMOTE_HOST: "192.99.145.129"
         REMOTE_USER: "debian"
         TARGET: "/home/debian/JPINVERSIONES"
 
     - name: Restart PM2
-      run: ssh -o StrictHostKeyChecking=no debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
-
+      run: ssh debian@192.99.145.129 "cd /home/debian/JPINVERSIONES && pm2 restart next-app"
