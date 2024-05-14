@@ -47,6 +47,10 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   }
 
   useEffect(() => {
+    console.log("Verificando sesión:", session);
+  }, [session]);
+
+  useEffect(() => {
     if (colombia && colombia.allCities) {
       const cities = colombia.allCities();
       setAllCities(cities);
@@ -183,6 +187,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     return result.success;
   };
 
+// Añadir un log en el manejo de inicio de sesión
   const handleIdLogin = async (idNumber) => {
     const result = await signIn("credentials", {
       email: confirmEmail,
@@ -191,10 +196,10 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     });
 
     if (result && result.ok) {
-      console.log("Inicio de sesión exitoso.");
+      console.log("Inicio de sesión exitoso. Result:", result);
       setStep(2);
     } else {
-      console.error("Error al iniciar sesión.");
+      console.error("Error al iniciar sesión. Result:", result);
     }
   };
 

@@ -11,9 +11,11 @@ export default function LoginWithIdView({ email, onSubmit }) {
       alert("Por favor, ingresa tu número de documento.");
       return;
     }
-    onSubmit(idNumber); // Llama a la función de inicio de sesión proporcionada
+    console.log("Iniciando sesión con ID:", idNumber);
+    onSubmit(idNumber);
   };
 
+  
   return (
     <div>
       <h3>Correo ya registrado</h3>
