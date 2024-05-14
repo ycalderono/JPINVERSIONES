@@ -40,8 +40,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const raffleType = packageDetails?.title;
 
-  console.log("Selected package:", packageDetails);
-  console.log("Raffle type:", raffleType);
+  console.log("Esta es la sesion activa:", session);
 
   if (status === 'unauthenticated') {
     console.error("No hay sesión activa.");
