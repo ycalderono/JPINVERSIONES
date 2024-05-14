@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation'; // Cambiar a next/navigation
+import { useRouter } from 'next/navigation';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/modal';
 import UserInfoView from './views/UserInfoView';
 import FooterButtons from './FooterButtons';
@@ -20,7 +20,7 @@ interface City {
 }
 
 export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
-  const router = useRouter(); // Cambiar a useRouter de next/navigation
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
@@ -55,7 +55,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   }, []);
 
   useEffect(() => {
-    if (step === 6) {
+    if (step === 2) {
       generateSuggestedNumbers();
     }
   }, [step]);
@@ -94,11 +94,6 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     const filteredSuggestions = query.length > 2 ? filterCities(allCities, query) : [];
     setSuggestions(filteredSuggestions);
   };
-
-  useEffect(() => {
-    const cities = colombia.allCities();
-    setAllCities(cities);
-  }, []);
 
   const handleConfirmEmailBlur = async () => {
     if (confirmEmail) {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Input } from '@nextui-org/input';
 import { Button } from '@nextui-org/button';
 import { Chip } from '@nextui-org/chip';
