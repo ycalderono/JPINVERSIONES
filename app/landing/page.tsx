@@ -9,15 +9,16 @@ import Nequi from '../../public/nequi-2.svg';
 import RaffleModal from './components/modalForm/ModalForm';
 import { useDisclosure } from '@nextui-org/modal';
 import ProgressCard from "./components/rifaSection/ProgressCard";
+import { Card, CardFooter } from "@nextui-org/card";
 
 export default function LandingPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPackage, setSelectedPackage] = useState('');
 
   const packageOptions = [
-    { title: 'Doble Oportunidad', tickets: 2, price: 5000, isPopular: false, discount: 0 },
-    { title: 'Combo de la Fortuna', tickets: 5, price: 5000, isPopular: false, discount: 0 },
-    { title: 'Gran Premio Royale', tickets: 10, price: 5000, isPopular: true, discount: 20 },
+    { title: 'Doble Oportunidad', tickets: 2, price: 6000, isPopular: false, discount: 0 },
+    { title: 'Combo de la Fortuna', tickets: 5, price: 6000, isPopular: false, discount: 0 },
+    { title: 'Gran Premio Royale', tickets: 10, price: 6000, isPopular: true, discount: 20 },
   ];
 
   const handlePurchaseClick = (packageDetails) => {
@@ -29,8 +30,8 @@ export default function LandingPage() {
   return (
     <React.Fragment>
 
-      <div className="flex flex-row items-center justify-center max-w-screen-lg mx-auto px-4  sm:px-8 md:px-12 lg:px-0">
-        <div className="flex flex-col items-center justify-center w-[560px] h-[400px] px-4 sm:px-8 md:px-12 lg:px-0 ">
+      <div className="flex flex-row items-center justify-center max-w-screen-lg mx-16 px-4  sm:px-8 md:px-12 lg:px-0">
+        <div className="flex flex-col items-center justify-center w-[540px] h-[400px] px-4 sm:px-8 md:px-12 lg:px-0 ">
           <ImageCard />
         </div>
 
@@ -50,11 +51,11 @@ export default function LandingPage() {
             <ProgressCard />
       </div>
 
-      <div id="optionCardsSection" className="flex flex-col items-center justify-center my-5 max-w-6xl mx-auto">
+      <div id="optionCardsSection" className="flex flex-col items-center justify-center my-5 max-w-6xl mx-16">
         <h2 className="text-3xl font-bold text-center my-5">
           ¡<span className="text-custom-pink">Compra</span> tus puestos fácilmente!
         </h2>
-        <div className="flex flex-col md:flex-row justify-center items-center my-5 gap-5">
+        <div className="flex flex-col md:flex-row justify-center items-center my-5 gap-7">
           {packageOptions.map((option) => (
             console.log(option.title),
             <OptionCard
@@ -68,10 +69,12 @@ export default function LandingPage() {
             />
           ))}
         </div>
-        <div className="flex flex-row md:flex-row justify-center items-center my-5 gap-5">
-          <AhorroAlaMano className="size-32 my-5" />
-          <Nequi className="size-20 my-5" />
+        <Card className='flex flex-col justify-center items-center w-full h-24'>
+        <div className="flex flex-row justify-center items-center my-5 gap-5">
+            <AhorroAlaMano className="size-32 my-5" />
+            <Nequi className="size-20 my-5" />
         </div>
+        </Card>
       </div>
       <RaffleModal isOpen={isOpen} onOpenChange={onClose} packageDetails={selectedPackage} />
     </React.Fragment>

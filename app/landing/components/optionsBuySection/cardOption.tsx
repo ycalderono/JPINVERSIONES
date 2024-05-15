@@ -23,15 +23,15 @@ function OptionCard({ title, tickets, price, discount, isPopular, totalTickets =
             isHoverable
             isFooterBlurred
             radius="lg"
-            className={`w-full h-96 flex flex-col ${isPopular ? 'border-2 border-yellow-500' : ''}`} // Resaltado opcional
+            className={`w-full h-96 w-80 flex flex-col ${isPopular ? 'border-2 border-yellow-500' : ''}`} // Resaltado opcional
         >
             <CardHeader className="flex flex-col justify-center items-start px-4 py-4 h-36">
                 <div className="flex justify-between w-full items-center">
                     <p className="text-xl font-semibold">{title}</p>
                     {popularBadge}
                 </div>
-                <Divider className="w-full mt-2" />
-                <p className="text-sm text-gray-600 mt-1">{probabilityMessage}</p>
+                <Divider className="w-full mt-4" />
+                <p className="text-sm  mt-4">{probabilityMessage}</p>
             </CardHeader>
 
             <CardBody className="flex flex-col justify-center items-center gap-2">
@@ -42,10 +42,11 @@ function OptionCard({ title, tickets, price, discount, isPopular, totalTickets =
                 )}
 
             </CardBody>
-            <CardFooter className="flex justify-center py-6">
+            <CardFooter className="flex justify-center py-6 text-white">
                 <Button
+    
                     size="lg"
-                    className="bg-custom-pink"
+                    className=" bg-custom-pink"
                     onClick={() => onPurchaseClick({
                         title,
                         price: finalPrice,
