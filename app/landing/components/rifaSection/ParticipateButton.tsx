@@ -12,7 +12,7 @@ function ParticipateButton() {
 
     return (
         <Button 
-            className="text-black font-medium text-lg text-center text-white bg-custom-pink" 
+            className="text-black font-medium  text-base sm:text-base  md:tex-base lg:text-lg text-center text-white bg-custom-pink" 
             radius="lg" 
             size="lg"
             onPress={scrollToOptions}  // Cambiando de onClick a onPress

@@ -29,25 +29,30 @@ export default function LandingPage() {
 
   return (
     <React.Fragment>
+       
+      <div className="flex flex-col lg:flex-row items-center justify-center max-w-screen-lg mx-2  lg:mx-16 px-4 lg:px-0 gap-4 lg:gap-0">
+      
 
-      <div className="flex flex-row items-center justify-center max-w-screen-lg mx-16 px-4  sm:px-8 md:px-12 lg:px-0">
-        <div className="flex flex-col items-center justify-center w-[540px] h-[400px] px-4 sm:px-8 md:px-12 lg:px-0 ">
-          <ImageCard />
-        </div>
 
-        <div className="flex flex-col w-1/2 px-4 sm:px-8 md:px-12 lg:px-0 mx-5 ">
-          <div className="flex flex-col items-center justify-center ">
-            <h1 className="text-6xl font-black justify-center text-left ">
-              ¡Gana una <br /> increíble Moto Crypton FI 2025!
-            </h1>
-          </div>          
-          <div className="flex flex-col items-end justify-center ">
-            <HeroSection />
-          </div>
+      <div className="flex flex-col w-full lg:w-1/2 px-4 sm:px-8 md:px-12 lg:px-0 mx-5 order-1 lg:order-2 sm:order-1 md:order-1">
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black justify-center sm:text-center md:text-left leading-8">
+          ¡Gana una <br /> increíble Moto Crypton FI 2025!
+        </h1>
+      </div>
+
+        <div className="flex flex-col items-end justify-center">
+          <HeroSection />
         </div>
       </div>
 
-      <div className="flex flex-col items-center py-10 justify-center mx-16 px-4 sm:px-8 md:px-12 lg:px-0 ">
+      <div className="flex flex-col items-center justify-center w-[200px] h-auto sm:w-[200px] sm:h-[200px]  md:w-[250px] md:h-[250px] lg:w-[540px] lg:h-[400px]">
+        <ImageCard />
+      </div>
+
+      </div>
+
+      <div className="flex flex-col items-center py-10 justify-center mx-2  lg:mx-16 px-4 lg:px-0 gap-4 lg:gap-0  ">
             <ProgressCard />
       </div>
 
