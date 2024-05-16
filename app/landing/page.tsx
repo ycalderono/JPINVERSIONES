@@ -57,10 +57,10 @@ export default function LandingPage() {
       </div>
 
       <div id="optionCardsSection" className="flex flex-col items-center justify-center my-5 max-w-6xl mx-16">
-        <h2 className="text-3xl font-bold text-center my-5">
-          ¡<span className="text-custom-pink">Compra</span> tus puestos fácilmente!
+        <h2 className="text-lg text-lg lg:text-3xl font-bold text-center my-5">
+          ¡<span className="text-custom-pink ">Compra</span> tu paquete de assets fácilmente!
         </h2>
-        <div className="flex flex-col md:flex-row justify-center items-center my-5 gap-7">
+        <div className="flex flex-col  md:flex-row justify-center items-center my-5 gap-7">
           {packageOptions.map((option) => (
             console.log(option.title),
             <OptionCard

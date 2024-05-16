@@ -15,8 +15,8 @@ function OptionCard({ title, tickets, price, discount, isPopular, totalTickets =
         <span className="text-xs bg-yellow-400 text-white py-1 px-2 rounded-full">Popular</span>
     ) : null;
 
-    // Mensaje con las probabilidades de ganar
-    const probabilityMessage = `Obtén ${tickets} de cada ${totalTickets} posibilidades de ganar con este paquete.`;
+
+        
 
     return (
         <Card
@@ -31,11 +31,11 @@ function OptionCard({ title, tickets, price, discount, isPopular, totalTickets =
                     {popularBadge}
                 </div>
                 <Divider className="w-full mt-4" />
-                <p className="text-sm  mt-4">{probabilityMessage}</p>
+                <p className="text-sm  mt-4"> Obtén {tickets} oportunidades de ganar con este paquete.</p> 
             </CardHeader>
 
             <CardBody className="flex flex-col justify-center items-center gap-2">
-                <p className="text-3xl font-bold text-custom-blue">{tickets} Puestos/Tickets</p>
+                <p className="text-3xl font-bold text-custom-blue">{tickets} Assets/Tickets</p>
                 <p className="text-2xl font-bold">{`$${finalPrice.toLocaleString('es-CO')}`}</p>
                 {discount > 0 && (
                     <p className="text-sm text-green-500 font-medium">{`${discount}% de descuento`}</p>

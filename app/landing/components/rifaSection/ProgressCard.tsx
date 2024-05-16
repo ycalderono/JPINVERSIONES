@@ -6,14 +6,10 @@ import ProgressBar from "./ProgressBar";
 function ProgressCard() {
     return (
         <div className="order-1 md:order-2 w-full">
-            <h3 className="w-full text-base sm:text-base md:text-lg lg:text-xl  font-semibold mb-2">Venta de Puestos/Tickets</h3>
             <div className="w-full">
                 <ProgressBar value={73} />
             </div>
-            <div className="w-full flex justify-between w-full mt-2">
-                <p className="text-xs sm:text-xs md:text-xs lg:text-base  font-style: italic">Total de puestos</p>
-                <p className="text-xs sm:text-xs md:text-xs lg:text-base  text-custom-pink font-style: italic">10000</p>
-            </div>
+
 
         </div>
     );
