@@ -10,6 +10,7 @@ import RaffleModal from './components/modalForm/ModalForm';
 import { useDisclosure } from '@nextui-org/modal';
 import ProgressCard from "./components/rifaSection/ProgressCard";
 import { Card, CardFooter } from "@nextui-org/card";
+import ParticipateButton from './components/rifaSection/ParticipateButton';
 
 export default function LandingPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,30 +28,46 @@ export default function LandingPage() {
     onOpen();
   };
 
+
   return (
     <React.Fragment>
-       
-      <div className="flex flex-col lg:flex-row items-center justify-center max-w-screen-lg mx-2  lg:mx-16 px-4 lg:px-0 gap-4 lg:gap-0">
-      
+      <div className="flex flex-col lg:flex-row items-center justify-center max-w-screen-lg mx-2 lg:mx-16 px-4 lg:px-0 gap-4 lg:gap-0 border border-white">
+  
 
+    <div className="flex flex-col items-center justify-center w-full h-[200px] sm:h-[300px] md:h-[350px] lg:w-[540px] lg:h-[400px] order-3 lg:order-1 border border-white">
+      <ImageCard />
+    </div>
 
-      <div className="flex flex-col w-full lg:w-1/2 px-4 sm:px-8 md:px-12 lg:px-0 mx-5 order-1 lg:order-2 sm:order-1 md:order-1">
-      <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 order-1 lg:order-2 border border-white">
+      <div className="flex flex-col items-center lg:items-start justify-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black justify-center sm:text-center md:text-left leading-8">
           ¡Gana una <br /> increíble Moto Crypton FI 2025!
         </h1>
       </div>
-
-        <div className="flex flex-col items-end justify-center">
-          <HeroSection />
-        </div>
+      <div className="flex flex-col items-center lg:items-start justify-center">
+        <HeroSection />
       </div>
 
-      <div className="flex flex-col items-center justify-center w-[200px] h-auto sm:w-[200px] sm:h-[200px]  md:w-[250px] md:h-[250px] lg:w-[540px] lg:h-[400px]">
-        <ImageCard />
+      <div className="hidden lg:flex flex-col items-center lg:items-start justify-center w-full lg:mt-4">
+        <ParticipateButton />
       </div>
+    </div>
+  
 
-      </div>
+    <div className="flex flex-col items-center lg:hidden justify-center w-full order-4">
+      <ParticipateButton />
+    </div>
+  </div>
+  
+
+
+
+
+
+
+
+
+
 
       <div className="flex flex-col items-center py-10 justify-center mx-2  lg:mx-16 px-4 lg:px-0 gap-4 lg:gap-0  ">
             <ProgressCard />
