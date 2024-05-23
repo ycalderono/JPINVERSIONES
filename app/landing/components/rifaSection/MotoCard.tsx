@@ -6,7 +6,7 @@ import { Image } from "@nextui-org/image";
 
 function ImageCard() {
   return (
-    <Card isFooterBlurred radius="lg" className="border-2 border-white/10 h-full w-full">
+    <Card isFooterBlurred radius="lg" className=" h-full w-full">
       <div className="w-full h-full">
         <Image
           alt="Moto NKD"

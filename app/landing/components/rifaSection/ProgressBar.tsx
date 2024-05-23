@@ -5,7 +5,7 @@ import { Progress } from "@nextui-org/progress";
 function ProgressBar({ value }) {
     return (
         <Progress
-            label="Total de Numeros Asignados"
+            label="Total Completado"
             size="lg"
             value={value}
             color="success"

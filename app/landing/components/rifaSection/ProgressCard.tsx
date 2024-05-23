@@ -9,8 +9,6 @@ function ProgressCard() {
             <div className="w-full">
                 <ProgressBar value={73} />
             </div>
-
-
         </div>
     );
 }
