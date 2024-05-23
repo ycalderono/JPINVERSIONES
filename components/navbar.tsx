@@ -37,9 +37,10 @@ export const Navbar = () => {
 		<NextUINavbar shouldHideOnScroll maxWidth="xl" position="sticky">
 			
 			<NavbarBrand as="li" className="gap-3 max-w-fit">
-				<NextLink className="flex justify-start items-center gap-1" href="/">
-					<Jp />
-					<p className="font-bold text-inherit">JP</p>
+				<NextLink className="flex justify-start items-center align-center  " href="/">
+					<Jp 
+						className="w-5 h-5" />
+					<p className="font-bold text-inherit text-2xl">JP</p>
 				</NextLink>
 			</NavbarBrand>
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="center">
