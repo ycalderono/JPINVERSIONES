@@ -38,9 +38,8 @@ export const Navbar = () => {
 			
 			<NavbarBrand as="li" className="gap-3 max-w-fit">
 				<NextLink className="flex justify-start items-center align-center  " href="/">
-					<Jp 
-						className="w-5 h-5" />
-					<p className="font-bold text-inherit text-2xl">JP</p>
+					<Jp className="w-6 h-6" />
+
 				</NextLink>
 			</NavbarBrand>
 			<NavbarContent className="basis-1/5 sm:basis-full" justify="center">
