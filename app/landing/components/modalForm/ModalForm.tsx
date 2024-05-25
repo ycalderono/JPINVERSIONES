@@ -1,4 +1,3 @@
-// RaffleModal component
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -69,7 +68,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
     setSuggestedNumbers(Array.from(uniqueNumbers));
   };
 
-  const calculatedTotalAmount = packageDetails.price * packageDetails.tickets;
+  const calculatedTotalAmount = packageDetails ? packageDetails.price * packageDetails.tickets : 0;
 
   const selectCity = (city) => {
     setCityQuery(city.name);
@@ -131,7 +130,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   };
 
   const selectSuggestedNumber = (num) => {
-    if (!selectedNumbers.includes(num) && selectedNumbers.length < packageDetails.tickets) {
+    if (!selectedNumbers.includes(num) && selectedNumbers.length < (packageDetails ? packageDetails.tickets : 0)) {
       setSelectedNumbers([...selectedNumbers, num]);
     }
   };
@@ -282,7 +281,7 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
                   addPreferredNumber={addPreferredNumber}
                   suggestedNumbers={suggestedNumbers}
                   selectSuggestedNumber={selectSuggestedNumber}
-                  maxNumbers={packageDetails.tickets}
+                  maxNumbers={packageDetails ? packageDetails.tickets : 0}
                 />
               ) : step === 3 ? (
                 <PaymentMethodsView onPaymentSelect={handlePaymentMethod} />
