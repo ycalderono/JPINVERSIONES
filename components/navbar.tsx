@@ -34,15 +34,15 @@ import Jp from "@/public/moneybag.svg";
 export const Navbar = () => {
 
 	return (
-		<NextUINavbar shouldHideOnScroll maxWidth="xl" position="sticky">
+		<NextUINavbar shouldHideOnScroll maxWidth="xl" position="sticky" >
 			
 			<NavbarBrand as="li" className="gap-3 max-w-fit">
 				<NextLink className="flex justify-start items-center align-center  " href="/">
 					<Jp className="w-6 h-6" />
 
 				</NextLink>
-			</NavbarBrand>
-			<NavbarContent className="basis-1/5 sm:basis-full" justify="center">
+			
+			<NavbarContent className="basis-1/5 sm:basis-full " justify="center" >
 				<ul className="hidden lg:flex gap-4 justify-start ml-2">
 					{siteConfig.navItems.map((item) => (
 						<NavbarItem key={item.href}>
@@ -60,6 +60,8 @@ export const Navbar = () => {
 					))}
 				</ul>
 			</NavbarContent>
+
+			</NavbarBrand>
 
 			<NavbarContent
 				className="hidden sm:flex basis-1/5 sm:basis-full"

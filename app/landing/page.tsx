@@ -108,103 +108,123 @@ export default function LandingPage() {
 
   return (
     <React.Fragment>
-      <div className="flex flex-col lg:flex-row items-center justify-center max-w-screen-lg mx-2 lg:mx-16 px-4 lg:px-0 gap-2 lg:gap-0">
-        <div className="flex flex-col items-center justify-center w-full h-[200px] sm:h-[300px] md:h-[350px] lg:w-[540px] lg:h-[400px] order-3 lg:order-1">
-          <ImageCard />
+<div className="flex flex-col items-center justify-center max-w-screen-lg mx-2 lg:mx-16 px-4 lg:px-0 gap-2 lg:gap-0">
+  <div className="flex flex-col lg:flex-row w-full items-center justify-center lg:gap-4">
+    <div className="flex flex-col items-center justify-center w-full lg:w-1/2 order-3 lg:order-1">
+      <div className="w-full h-[200px] sm:h-[300px] md:h-[350px] lg:w-[540px] lg:h-[400px]">
+        <ImageCard />
+      </div>
+    </div>
+    <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 order-1 lg:order-2">
+      <div className="flex flex-col items-center lg:items-start justify-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold justify-center sm:text-center md:text-left leading-8">
+          ¡Gana una <br /> increíble Moto Crypton FI 2025!
+        </h1>
+      </div>
+      <div className="flex flex-col items-center lg:items-start justify-center">
+        <HeroSection />
+      </div>
+      <div className="hidden lg:flex flex-col items-center lg:items-start justify-center w-full lg:mt-4">
+        <ParticipateButton scrollToOption={scrollToTenWallpaperOption} />
+      </div>
+    </div>
+  </div>
+  
+  <div className="flex flex-col items-center justify-center w-full py-4 order-4 lg:order-3 lg:w-full">
+    <ProgressCard />
+  </div>
+  
+  <div className="flex flex-col items-center justify-center w-full py-4 order-5">
+    {isMounted && (
+      <div className="grid grid-flow-col gap-5 text-center auto-cols-max">
+        <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+          <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.days)}>
+            <span>{timeLeft.days}</span>
+          </span>
+          days
         </div>
-        <div className="flex flex-col items-center lg:items-start justify-center w-full lg:w-1/2 order-1 lg:order-2">
-          <div className="flex flex-col items-center lg:items-start justify-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black justify-center sm:text-center md:text-left leading-8">
-              ¡Gana una <br /> increíble Moto Crypton FI 2025!
-            </h1>
-          </div>
-          <div className="flex flex-col items-center lg:items-start justify-center">
-            <HeroSection />
-          </div>
-          <div className="hidden lg:flex flex-col items-center lg:items-start justify-center w-full lg:mt-4">
-            <ParticipateButton scrollToOption={scrollToTenWallpaperOption} />
-          </div>
+        <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+          <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.hours)}>
+            <span>{timeLeft.hours}</span>
+          </span>
+          hours
         </div>
-        <div className="flex flex-col items-center justify-center w-full py-4 order-4">
-          <ProgressCard />
+        <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+          <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.minutes)}>
+            <span>{timeLeft.minutes}</span>
+          </span>
+          min
         </div>
-
-        <div className="flex flex-col items-center justify-center w-full py-4 order-5">
-          {isMounted && (
-            <div className="grid grid-flow-col gap-5 text-center auto-cols-max">
-              <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
-                <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.days)}>
-                  <span>{timeLeft.days}</span>
-                </span>
-                days
-              </div>
-              <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
-                <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.hours)}>
-                  <span>{timeLeft.hours}</span>
-                </span>
-                hours
-              </div>
-              <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
-                <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.minutes)}>
-                  <span>{timeLeft.minutes}</span>
-                </span>
-                min
-              </div>
-              <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
-                <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.seconds)}>
-                  <span>{timeLeft.seconds}</span>
-                </span>
-                sec
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col items-center lg:hidden justify-center w-full order-6">
-          <ParticipateButton scrollToOption={scrollToTenWallpaperOption} />
+        <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+          <span className="countdown font-mono text-5xl" style={countdownStyle(timeLeft.seconds)}>
+            <span>{timeLeft.seconds}</span>
+          </span>
+          sec
         </div>
       </div>
-      <div id="optionCardsSection" className="flex flex-col lg:flex-row items-center justify-center max-w-screen-lg mx-2 lg:mx-16 px-4 lg:px-0 gap-2 lg:gap-0">
-        <h2 className="text-lg lg:text-3xl font-bold text-center my-4">
-          ¡<span className="text-custom-pink">Adquiere</span> tu paquete exclusivo de fondos de pantalla!
-        </h2>
-        <div className="flex flex-col md:flex-row justify-center items-center my-5 gap-7">
-          {packageOptions.map((option) => (
-            <OptionCard
-              key={option.title}
-              title={option.title}
-              tickets={option.tickets}
-              price={option.price}
-              isPopular={option.isPopular}
-              discount={option.discount}
-              onPurchaseClick={() => handlePurchaseClick(option)}
-              id={option.title === 'Gran Premio Royale' ? 'ten-wallpaper-option' : null}
+    )}
+  </div>
+  
+  <div className="flex flex-col items-center lg:hidden justify-center w-full order-6">
+    <ParticipateButton scrollToOption={scrollToTenWallpaperOption} />
+  </div>
+</div>
+
+
+<div className="flex flex-col lg:flex-col items-center justify-center max-w-screen-lg mx-2 lg:mx-16 px-4 lg:px-0 gap-2 lg:gap-0">
+
+  <div className="w-full">
+    <h2 className="text-lg lg:text-3xl font-bold text-center my-4">
+      ¡<span className="text-custom-pink">Adquiere</span> tu paquete exclusivo de fondos de pantalla!
+    </h2>
+  </div>
+
+  <div className="flex flex-col lg:flex-col justify-center items-center my-5 gap-7 w-full">
+
+    <div className="flex flex-col md:flex-row justify-center items-center gap-7 w-full lg:w-full">
+      {packageOptions.map((option) => (
+        <OptionCard
+          key={option.title}
+          title={option.title}
+          tickets={option.tickets}
+          price={option.price}
+          isPopular={option.isPopular}
+          discount={option.discount}
+          onPurchaseClick={() => handlePurchaseClick(option)}
+          id={option.title === 'Gran Premio Royale' ? 'ten-wallpaper-option' : null}
+        />
+      ))}
+    </div>
+
+    <div className="flex flex-col justify-center items-center w-full lg:w-full">
+      <Card className='flex flex-col justify-center items-center w-full w-80'>
+        <div className="flex flex-col justify-center items-center p-4 gap-4">
+          <span className="text-sm text-center">¿Necesitas más? Compra la cantidad de fondos de pantalla premium que desees aquí.</span>
+          <div className="flex w-full justify-center items-center gap-2">
+            <Input
+              label="Cantidad"
+              type="number"
+              value={customTicketCount}
+              onChange={(e) => setCustomTicketCount(e.target.value)}
+              variant="bordered"
+              size='sm'
+              className="text-black dark:text-white font-medium text-base sm:text-base md:text-base lg:text-lg border-gray-300 dark:border-gray-700"
             />
-          ))}
-          <Card className='flex flex-col justify-center items-center w-full w-80'>
-            <div className="flex flex-col justify-center items-center p-4 gap-4">
-              <span className="text-sm  text-center">¿Necesitas más? Compra la cantidad de fondos de pantalla premium que desees aquí.</span>
-              <div className="flex w-full justify-center items-center  gap-2">
-                <Input
-                  label="Cantidad"
-                  type="number"
-                  value={customTicketCount}
-                  onChange={(e) => setCustomTicketCount(e.target.value)}
-                  variant="bordered"
-                  size='sm'
-                  className="text-black dark:text-white  font-medium text-base sm:text-base md:text-base lg:text-lg border-gray-300 dark:border-gray-700"
-                />
-                <Button 
-                  className=" font-base text-base  sm:text-base md:text-base lg:text-lg text-center bg-custom-pink " 
-                  radius="lg" 
-                  onPress={handleCustomPurchaseClick} // Usar onPress en lugar de onClick para NextUI
-                >
-                  Siguiente
-                </Button>
-              </div>
-            </div>
-          </Card>
+            <Button 
+              className="font-base text-base sm:text-base md:text-base lg:text-lg text-center bg-custom-pink" 
+              radius="lg" 
+              onPress={handleCustomPurchaseClick} // Usar onPress en lugar de onClick para NextUI
+            >
+              Siguiente
+            </Button>
+          </div>
         </div>
+      </Card>
+    </div>
+  </div>
+
+
+
 
         <Card className='flex flex-col justify-center items-center w-full h-24'>
           <div className="flex flex-row justify-center items-center my-5 gap-5">
