@@ -17,7 +17,7 @@ function ProgressBar({ value }) {
                 track: "w-full drop-shadow-md  ", // Asegura que el track ocupe todo el ancho
                 indicator: "bg-gradient-to-r from-white to-custom-pink",
                 label: "text-xs sm:text-xs md:text-xs lg:text-base w-2/3",
-                value: "text-custom-pink text-xs sm:text-xs md:text-xs lg:text-base font-bold text-center align-center",
+                value: "text-custom-pink text-xl sm:text-xs md:text-xs lg:text-base font-bold text-center align-center",
             }}
         />
     );

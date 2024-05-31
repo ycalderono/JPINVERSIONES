@@ -183,21 +183,20 @@ export default function LandingPage() {
           ))}
           <Card className='flex flex-col justify-center items-center w-full w-80'>
             <div className="flex flex-col justify-center items-center p-4 gap-4">
-              <span className="text-sm underline text-center">¿Necesitas más? Compra la cantidad de fondos de pantalla premium que desees aquí.</span>
-              <div className="flex w-full gap-2">
+              <span className="text-sm  text-center">¿Necesitas más? Compra la cantidad de fondos de pantalla premium que desees aquí.</span>
+              <div className="flex w-full justify-center items-center  gap-2">
                 <Input
                   label="Cantidad"
                   type="number"
                   value={customTicketCount}
                   onChange={(e) => setCustomTicketCount(e.target.value)}
-                  placeholder="Cantidad de fondos de pantalla"
                   variant="bordered"
-                  className="text-black dark:text-white font-medium text-base sm:text-base md:text-base lg:text-lg border-gray-300 dark:border-gray-700"
+                  size='sm'
+                  className="text-black dark:text-white  font-medium text-base sm:text-base md:text-base lg:text-lg border-gray-300 dark:border-gray-700"
                 />
                 <Button 
-                  className="text-black dark:text-white font-medium text-base sm:text-base md:text-base lg:text-lg text-center bg-custom-pink border border-gray-300 dark:border-gray-700" 
+                  className=" font-base text-base  sm:text-base md:text-base lg:text-lg text-center bg-custom-pink " 
                   radius="lg" 
-                  size="lg"
                   onPress={handleCustomPurchaseClick} // Usar onPress en lugar de onClick para NextUI
                 >
                   Siguiente
