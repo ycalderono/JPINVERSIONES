@@ -1,4 +1,5 @@
 import { Link } from "@nextui-org/link";
+import { useRouter } from "next/router";
 import { Snippet } from "@nextui-org/snippet";
 import { Code } from "@nextui-org/code"
 import { button as buttonStyles } from "@nextui-org/theme";
@@ -28,19 +29,24 @@ export default function Home() {
 			<span className="text-xs font-normal text-center ">Fondos premium para quienes buscan exclusividad y estilo único.</span>
 		</div>
 		<div className="flex gap-4">
-			<Button
-				className="text-black leading-6 font-medium  text-base sm:text-base  md:tex-base lg:text-lg text-center text-white bg-custom-pink w-[147px]" 
-				radius = "lg"
-				size = "md"
-			>
-				Promociones
-		  	</Button>
-			<Button
-				className="text-black font-medium leading-6  text-base sm:text-base  md:tex-base lg:text-lg text-center text-white bg-custom-pink w-[147px]" 
-				radius = "lg"
-				size = "md">
-				Comprar ahora
-		  	</Button>
+        <Link href="/landing">
+          <Button
+            className="text-black leading-6 font-medium text-base sm:text-base md:tex-base lg:text-lg text-center text-white bg-custom-pink w-[147px]" 
+            radius="lg"
+            size="md"
+          >
+            Promociones
+          </Button>
+        </Link>
+        <Link href="/wallpapers" >
+          <Button
+            className="text-black font-medium leading-6 text-base sm:text-base md:tex-base lg:text-lg text-center text-white bg-custom-pink w-[147px]" 
+            radius="lg"
+            size="md"
+          >
+            Comprar ahora
+          </Button>
+        </Link>
 		</div>
 	  </section>
 	);
