@@ -20,7 +20,7 @@ const ProfileInfoCard: React.FC = () => {
         <div className="flex flex-col items-center justify-center">
           <div className="text-lg font-bold">{profile.fullName}</div>
           <div className="text-sm text-gray-600">{profile.email}</div>
-          <div className="text-sm text-gray-600">{profile.phone}</div>
+          <div className="text-sm text-gray-600">+57 {profile.phone}</div>
         </div>
       </CardBody>
     </Card>

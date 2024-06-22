@@ -3,6 +3,8 @@
 import React from 'react';
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
 import { Button } from "@nextui-org/button";
+import { Chip } from "@nextui-org/chip";
+import TransactionLogo from '@/public/menutransaccionlogo.svg';
 
 interface TransactionDetails {
   itemsBought: number;
@@ -50,7 +52,7 @@ const TransactionList: React.FC = () => {
   return (
     <Accordion 
       className="px-0 max-w-[400px]"
-      variant="shadow"
+      variant="splitted"
       itemClasses={{
         base: "py-0 w-full",
         title: "font-normal text-medium",
@@ -64,16 +66,26 @@ const TransactionList: React.FC = () => {
           key={transaction.id}
           aria-label={`Transaccion #${transaction.id}: ${transaction.title}`}
           title={
-            <div className="flex flex-col">
-              <span>{`Transaccion #${transaction.id}: ${transaction.title}`}</span>
-              <span className="text-small text-default-400">{transaction.date}</span>
+          <div className='flex flex-row gap-3'>
+            <div className='items-center justify-center flex ' >
+              <TransactionLogo className="w-6 h-6" ></TransactionLogo>
             </div>
-          }
-          subtitle={
-            transaction.isPromotion ? 
-            <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
-              Promoción
-            </span> : null
+            <div>
+              <div className="flex flex-col">
+                <span className='text-base truncate ...'>{`Transaccion #${transaction.id}: ${transaction.title}`}</span>
+                <div className='flex flex-row items-center'>
+                  <span className="text-sm text-default-500">{transaction.date}</span>
+                  {transaction.isPromotion && (
+                    <div className='ml-1'>
+                      <Chip radius='full' variant="bordered" size="sm" className="text-custom-pink border-custom-pink ">
+                        Promoción
+                      </Chip>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            </div>
           }
           style={{
             backgroundColor: 'rgba(113, 113, 122, 0.3)',
