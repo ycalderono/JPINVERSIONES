@@ -10,7 +10,7 @@ const ProfileInfoCard: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (session?.user?.email) {
-        const res = await fetch(`/api/usuarios/profile?email=${session.user.email}`);
+        const res = await fetch(`/api/usuarios/profile`);
         const data = await res.json();
         console.log(data);
         setProfile(data);

@@ -1,19 +1,20 @@
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/lib/auth";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
   try {
-    const url = new URL(request.url);
-    const email = url.searchParams.get('email');
-
-    if (!email) {
-      return NextResponse.json({ message: 'Invalid email' });
-    }
-
     const user = await prisma.usuario.findUnique({
-      where: { email },
+      where: { email: session.user.email },
     });
 
     if (user) {
@@ -22,6 +23,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'User not found' });
     }
   } catch (error) {
-    return NextResponse.json({ message: 'Error retrieving profile data' });
+    console.error("Error retrieving profile data:", error);
+    return NextResponse.json({ error: "Error retrieving profile data" }, { status: 500 });
   }
 }
