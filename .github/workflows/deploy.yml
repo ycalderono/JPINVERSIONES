@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -17,17 +17,7 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Deploy to Server via SSH
-      uses: easingthemes/ssh-deploy@v4.1.8
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-rltgoDzvO"
-        SOURCE: "./"
-        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-        REMOTE_USER: ${{ secrets.REMOTE_USER }}
-        TARGET: "/home/debian/JPINVERSIONES"
-
-    - name: Install dependencies and build on server
+    - name: Deploy to Production Server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
@@ -35,17 +25,10 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /home/debian/JPINVERSIONES
+          git fetch origin master
+          git reset --hard origin/master
           npm ci
           npm run build
-
-    - name: Restart application with PM2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/debian/JPINVERSIONES
           pm2 reload next-app || pm2 start npm --name "next-app" -- start
 
     - name: Verify Deployment
