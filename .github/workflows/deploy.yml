@@ -6,49 +6,42 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
         node-version: '18'
 
-    - name: Deploy to Server via SSH
-      uses: easingthemes/ssh-deploy@v2.1.5
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-rltgoDzvO"
-        SOURCE: "./"  # Incluye todos los archivos necesarios desde la raíz del proyecto
-        REMOTE_HOST: "192.99.145.129"
-        REMOTE_USER: "debian"
-        TARGET: "/home/debian/JPINVERSIONES"
-
-    - name: Install dependencies on server
+    - name: Deploy to Production Server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          # Navegar al directorio del proyecto
           cd /home/debian/JPINVERSIONES
-          npm install
 
-    - name: Build project on server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/debian/JPINVERSIONES
+          # Actualizar el repositorio
+          git fetch origin master
+          git reset --hard origin/master
+
+          # Instalar dependencias
+          npm ci
+
+          # Construir el proyecto
           npm run build
 
-    - name: Restart application with PM2
+          # Reiniciar la aplicación con PM2
+          pm2 reload next-app || pm2 start npm --name "next-app" -- start
+
+    - name: Verify Deployment
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_HOST }}
@@ -56,4 +49,9 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /home/debian/JPINVERSIONES
-          pm2 restart next-app || pm2 start npm --name 'next-app' -- start
+          if pm2 show next-app | grep -q "online"; then
+            echo "Deployment successful: Application is running"
+          else
+            echo "Deployment failed: Application is not running"
+            exit 1
+          fi
