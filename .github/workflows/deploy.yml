@@ -18,16 +18,61 @@ jobs:
         key: ${{ secrets.DEPLOY_KEY }}
         known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
+    - name: Debug SSH Setup
+      run: |
+        echo "SSH Key (first few characters):"
+        head -n 1 ~/.ssh/id_rsa
+        echo "Known Hosts (first few lines):"
+        head -n 3 ~/.ssh/known_hosts
+        echo "SSH Directory Permissions:"
+        ls -la ~/.ssh
+
+    - name: Test SSH Connection
+      env:
+        HOST: ${{ secrets.REMOTE_HOST }}
+        USER: ${{ secrets.REMOTE_USER }}
+      run: |
+        ssh -i ~/.ssh/id_rsa -vvv -o StrictHostKeyChecking=no $USER@$HOST echo "SSH connection successful"
+
+    - name: Debug Remote Environment
+      env:
+        HOST: ${{ secrets.REMOTE_HOST }}
+        USER: ${{ secrets.REMOTE_USER }}
+      run: |
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$HOST << EOF
+          echo "Current directory:"
+          pwd
+          echo "JPINVERSIONES directory contents:"
+          ls -la /home/debian/JPINVERSIONES
+          echo "Git status:"
+          cd /home/debian/JPINVERSIONES && git status
+          echo "Node version:"
+          node --version
+          echo "NPM version:"
+          npm --version
+          echo "PM2 list:"
+          pm2 list
+        EOF
+
     - name: Deploy to Production Server
       env:
         HOST: ${{ secrets.REMOTE_HOST }}
         USER: ${{ secrets.REMOTE_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$HOST << EOF
+          set -e
           cd /home/debian/JPINVERSIONES
+          echo "Pulling latest changes..."
           git pull origin master
-          npm ci
+          echo "Installing dependencies..."
+          if [ ! -f package-lock.json ]; then
+            npm install
+          else
+            npm ci
+          fi
+          echo "Building project..."
           npm run build
+          echo "Restarting PM2..."
           pm2 reload next-app || pm2 start npm --name "next-app" -- start
         EOF
 
@@ -36,12 +81,13 @@ jobs:
         HOST: ${{ secrets.REMOTE_HOST }}
         USER: ${{ secrets.REMOTE_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
+        ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $USER@$HOST << EOF
           cd /home/debian/JPINVERSIONES
           if pm2 show next-app | grep -q "online"; then
             echo "Deployment successful: Application is running"
           else
             echo "Deployment failed: Application is not running"
+            pm2 logs next-app --lines 50
             exit 1
           fi
         EOF
