@@ -8,12 +8,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup Node.js
+    - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
@@ -25,20 +24,11 @@ jobs:
         username: ${{ secrets.REMOTE_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          # Navegar al directorio del proyecto
           cd /home/debian/JPINVERSIONES
-
-          # Actualizar el repositorio
           git fetch origin master
           git reset --hard origin/master
-
-          # Instalar dependencias
           npm ci
-
-          # Construir el proyecto
           npm run build
-
-          # Reiniciar la aplicación con PM2
           pm2 reload next-app || pm2 start npm --name "next-app" -- start
 
     - name: Verify Deployment
@@ -53,5 +43,6 @@ jobs:
             echo "Deployment successful: Application is running"
           else
             echo "Deployment failed: Application is not running"
+            pm2 logs next-app --lines 50
             exit 1
           fi
