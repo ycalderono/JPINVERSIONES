@@ -17,6 +17,7 @@ model Purchase {
   paymentMethod  String
   totalAmount    Float               @default(0.0)
   paymentStatus  String              @default("pending")
+  isPromotion    Boolean             @default(false)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 }

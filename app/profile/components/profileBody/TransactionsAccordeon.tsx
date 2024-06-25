@@ -15,6 +15,7 @@ interface Transaction {
   paymentStatus: string;
   createdAt: string;
   selectedNumbers: { number: string }[];
+  isPromotion: boolean;
 }
 
 const TransactionList: React.FC = () => {
@@ -67,10 +68,15 @@ const TransactionList: React.FC = () => {
                   <span className='text-base truncate ...'>{`Transacción #${transaction.id}: ${transaction.raffleType}`}</span>
                   <div className='flex flex-row items-center'>
                     <span className="text-sm text-default-500">{new Date(transaction.createdAt).toLocaleDateString()}</span>
-                    <div className='ml-1'>
+                    <div className='ml-1 flex space-x-1'>
                       <Chip radius='full' variant="bordered" size="sm" className={transaction.paymentStatus === 'completed' ? "text-green-500 border-green-500" : "text-yellow-500 border-yellow-500"}>
                         {transaction.paymentStatus === 'completed' ? 'Completado' : 'Pendiente'}
                       </Chip>
+                      {transaction.isPromotion && (
+                        <Chip radius='full' variant="bordered" size="sm" className="text-blue-500 border-blue-500">
+                          Promoción
+                        </Chip>
+                      )}
                     </div>
                   </div>
                 </div>

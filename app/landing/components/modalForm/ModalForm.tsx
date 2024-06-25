@@ -210,39 +210,46 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   const handleConfirmPurchase = async () => {
     if (status !== "authenticated" || !session?.user) {
       console.error("No hay sesión activa o el usuario no está autenticado.");
-      // Aquí puedes redirigir al usuario a la página de login si lo deseas
       router.push('/login');
       return;
     }
-
+  
     try {
       const purchaseDetails = {
-        email: session.user.email, // Usamos el email como identificador
-        idNumber: session.user.idNumber, // Asumiendo que guardamos el idNumber en la sesión
+        email: session.user.email,
+        idNumber: session.user.idNumber,
         raffleType,
         selectedNumbers,
         paymentMethod,
         totalAmount: calculatedTotalAmount,
+        isPromotion: isPromotion(), // Añadimos esta línea
       };
-
+  
       const response = await fetch('/api/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(purchaseDetails),
       });
-
+  
       if (!response.ok) {
         throw new Error('Error en la respuesta del servidor');
       }
-
+  
       const data = await response.json();
       console.log('Compra guardada con éxito:', data.purchase);
       onOpenChange(false);
       router.push('/profile');
     } catch (error) {
       console.error('Error al guardar la compra:', error);
-      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
+      // Manejar el error aquí
     }
+  };
+  
+  // Función para determinar si es una promoción
+  const isPromotion = () => {
+    // Aquí puedes implementar tu lógica para determinar si es una promoción
+    // Por ejemplo, basado en el número de boletos seleccionados, el tipo de rifa, etc.
+    return selectedNumbers.length > 0; // Ejemplo: es promoción si se seleccionan más de 5 números
   };
 
   return (
