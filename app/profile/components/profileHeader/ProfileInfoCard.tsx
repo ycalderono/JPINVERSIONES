@@ -1,19 +1,23 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Card, CardBody } from "@nextui-org/card";
 
 const ProfileInfoCard: React.FC = () => {
+  const { data: session } = useSession();
   const [profile, setProfile] = useState<{ fullName: string; email: string; phone: string }>({ fullName: '', email: '', phone: '' });
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const res = await fetch('/api/usuarios/profile?id=1'); // ID debe ser dinámico según la sesión
-      const data = await res.json();
-      console.log(data);
-      setProfile(data);
+      if (session?.user?.email) {
+        const res = await fetch(`/api/usuarios/profile?email=${session.user.email}`);
+        const data = await res.json();
+        console.log(data);
+        setProfile(data);
+      }
     };
     fetchProfile();
-  }, []);
+  }, [session]);
 
   return (
     <Card className="w-full h-full">

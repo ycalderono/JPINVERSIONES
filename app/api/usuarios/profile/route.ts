@@ -6,14 +6,14 @@ const prisma = new PrismaClient();
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    const id = parseInt(url.searchParams.get('id') || '0', 10);
+    const email = url.searchParams.get('email');
 
-    if (!id) {
-      return NextResponse.json({ message: 'Invalid user ID' });
+    if (!email) {
+      return NextResponse.json({ message: 'Invalid email' });
     }
 
     const user = await prisma.usuario.findUnique({
-      where: { id },
+      where: { email },
     });
 
     if (user) {
