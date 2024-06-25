@@ -1,8 +1,10 @@
 name: Deploy to Production
+
 on:
   push:
     branches:
       - master
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -10,17 +12,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2
       with:
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ secrets.DEPLOY_KEY }}
         known_hosts: ${{ secrets.KNOWN_HOSTS }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
 
     - name: Deploy to Production Server
       env:
@@ -29,8 +25,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
           cd /home/debian/JPINVERSIONES
-          git fetch origin master
-          git reset --hard origin/master
+          git pull origin master
           npm ci
           npm run build
           pm2 reload next-app || pm2 start npm --name "next-app" -- start
