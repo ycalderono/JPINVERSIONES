@@ -14,14 +14,15 @@ import ConfirmationView from './views/ConfirmationView';
 import colombia from '@/app/data/colombia';
 import { filterCities } from '../utils/cityHelpers';
 
+
 interface City {
   id: number;
   name: string;
 }
 
 export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
-  const router = useRouter();
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -207,15 +208,17 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
   };
 
   const handleConfirmPurchase = async () => {
-    try {
-      const userId = session?.user?.id ?? 'defaultUserId';
-      if (userId === 'defaultUserId') {
-        console.error("No hay sesión activa o el usuario no está definido.");
-        return;
-      }
+    if (status !== "authenticated" || !session?.user) {
+      console.error("No hay sesión activa o el usuario no está autenticado.");
+      // Aquí puedes redirigir al usuario a la página de login si lo deseas
+      router.push('/login');
+      return;
+    }
 
+    try {
       const purchaseDetails = {
-        userId: userId,
+        email: session.user.email, // Usamos el email como identificador
+        idNumber: session.user.idNumber, // Asumiendo que guardamos el idNumber en la sesión
         raffleType,
         selectedNumbers,
         paymentMethod,
@@ -228,16 +231,17 @@ export default function RaffleModal({ isOpen, onOpenChange, packageDetails }) {
         body: JSON.stringify(purchaseDetails),
       });
 
-      const data = await response.json();
-      if (data.success) {
-        console.log('Compra guardada con éxito:', data.purchase);
-        onOpenChange(false);
-        router.push('/profile');
-      } else {
-        console.error('Error al guardar la compra:', data.error);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
       }
+
+      const data = await response.json();
+      console.log('Compra guardada con éxito:', data.purchase);
+      onOpenChange(false);
+      router.push('/profile');
     } catch (error) {
       console.error('Error al guardar la compra:', error);
+      // Aquí puedes manejar el error, por ejemplo, mostrando un mensaje al usuario
     }
   };
 

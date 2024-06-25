@@ -1,43 +1,44 @@
 // api/purchase/route.ts
 
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+// pages/api/purchase.ts o app/api/purchase/route.ts (dependiendo de tu estructura)
+
+import { NextResponse } from 'next/server';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { userId, raffleType, selectedNumbers, paymentMethod, totalAmount } = body;
+    const { email, idNumber, raffleType, selectedNumbers, paymentMethod, totalAmount } = await req.json();
 
-    // Verificar si el `userId` es válido
-    if (!userId || typeof userId !== 'number') {
-      return NextResponse.json({ success: false, error: 'No se proporcionó un identificador de usuario válido' }, { status: 400 });
+    // Buscar al usuario por email e idNumber
+    const user = await prisma.usuario.findFirst({
+      where: {
+        email: email,
+        idNumber: idNumber
+      }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
     }
 
-    // Crear la nueva compra
+    // Crear la compra
     const purchase = await prisma.purchase.create({
       data: {
-        userId,
+        userId: user.id,
         raffleType,
-        selectedNumbers: {
-          create: selectedNumbers.map((num) => ({ number: num })),
-        },
         paymentMethod,
         totalAmount,
+        selectedNumbers: {
+          create: selectedNumbers.map((number: string) => ({ number }))
+        }
       },
     });
 
-    return NextResponse.json({ success: true, purchase });
-  } catch (error: unknown) {
-    console.error('Error al guardar la compra:', error);
-  
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, error: error.message });
-    } else {
-      // Puedes decidir cómo manejar los casos donde el error no es una instancia de Error
-      return NextResponse.json({ success: false, error: 'An unexpected error occurred' });
-    }
+    return NextResponse.json({ success: true, purchase }, { status: 201 });
+  } catch (error) {
+    console.error('Error al procesar la compra:', error);
+    return NextResponse.json({ error: "Error al procesar la compra" }, { status: 500 });
   }
-  
 }

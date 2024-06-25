@@ -9,6 +9,7 @@ const ProfileInfoCard: React.FC = () => {
     const fetchProfile = async () => {
       const res = await fetch('/api/usuarios/profile?id=1'); // ID debe ser dinámico según la sesión
       const data = await res.json();
+      console.log(data);
       setProfile(data);
     };
     fetchProfile();
