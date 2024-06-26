@@ -2,18 +2,17 @@
 
 import { Button } from "@nextui-org/button";
 
-export default function AddToCartButton() {
-  const handleAddToCart = () => {
-    // Lógica para agregar al carrito
-    console.log('Agregado al carrito');
-  };
+interface AddToCartButtonProps {
+  onAddToCart: () => void;
+}
 
+export default function AddToCartButton({ onAddToCart }: AddToCartButtonProps) {
   return (
     <Button 
       className="text-tiny bg-custom-pink" 
       radius="full" 
       size="sm"
-      onClick={handleAddToCart}
+      onClick={onAddToCart}
     >
       Agregar al carrito
     </Button>

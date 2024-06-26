@@ -18,6 +18,7 @@ model Purchase {
   totalAmount    Float               @default(0.0)
   paymentStatus  String              @default("pending")
   isPromotion    Boolean             @default(false)
+  wallpaperTitle String?             // Nuevo campo para el título del wallpaper
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 }
