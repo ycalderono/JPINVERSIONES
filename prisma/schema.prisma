@@ -9,18 +9,27 @@ generator client {
 }
 
 model Purchase {
-  id             Int                 @id @default(autoincrement())
-  userId         Int
-  usuario        Usuario             @relation(fields: [userId], references: [id])
-  raffleType     String
-  selectedNumbers SelectedNumber[]
-  paymentMethod  String
-  totalAmount    Float               @default(0.0)
-  paymentStatus  String              @default("pending")
-  isPromotion    Boolean             @default(false)
-  wallpaperTitle String?             // Nuevo campo para el título del wallpaper
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  id               Int                 @id @default(autoincrement())
+  userId           Int
+  usuario          Usuario             @relation(fields: [userId], references: [id])
+  raffleType       String
+  selectedNumbers  SelectedNumber[]
+  paymentMethod    String
+  totalAmount      Float               @default(0.0)
+  paymentStatus    String              @default("pending")
+  isPromotion      Boolean             @default(false)
+  wallpaperTitle   String?
+  paymentProof     PaymentProof?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+}
+
+model PaymentProof {
+  id         Int      @id @default(autoincrement())
+  purchaseId Int      @unique
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  fileUrl    String   @db.Text
+  uploadedAt DateTime @default(now())
 }
 
 model SelectedNumber {

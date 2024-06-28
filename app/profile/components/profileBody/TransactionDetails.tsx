@@ -1,21 +1,39 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
-import { FaGift, FaUpload } from 'react-icons/fa';
+import { FaGift, FaUpload, FaCheckCircle } from 'react-icons/fa';
 import { Transaction } from '@/types/transaction';
 import { useRouter } from 'next/navigation';
+import { Tooltip } from "@nextui-org/tooltip";
 
 interface TransactionDetailsProps {
   transaction: Transaction;
 }
 
-
-
 const TransactionDetails: React.FC<TransactionDetailsProps> = ({ transaction }) => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isProofUploaded, setIsProofUploaded] = useState(false);
+
+  useEffect(() => {
+    checkPaymentProof();
+  }, [transaction.id]);
+
+  const checkPaymentProof = async () => {
+    try {
+      const response = await fetch(`/api/check-payment-proof/${transaction.id}`);
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      const data = await response.json();
+      setIsProofUploaded(data.isUploaded);
+    } catch (error) {
+      console.error('Error al verificar el comprobante:', error);
+    }
+  };
 
   const handleViewPromotion = () => {
     router.push('/landing');
@@ -25,12 +43,37 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ transaction }) 
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Aquí puede manejar la lógica para subir el archivo
-      console.log('Archivo seleccionado:', file.name);
-      // Implemente aquí la lógica para subir el archivo a su servidor
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('purchaseId', transaction.id.toString());
+
+      try {
+        const response = await fetch('/api/upload-payment-proof', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Error en la respuesta del servidor');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          console.log('Comprobante subido exitosamente:', data.paymentProof);
+          setIsProofUploaded(true);
+        } else {
+          throw new Error(data.error || 'Error desconocido');
+        }
+      } catch (error) {
+        console.error('Error al subir el comprobante:', error);
+        alert('Error al subir el comprobante');
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -60,27 +103,40 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = ({ transaction }) 
             Ver fondos
           </Button>
         </div>
-        {transaction.paymentMethod.toLowerCase().includes('bancolombia') || 
-         transaction.paymentMethod.toLowerCase().includes('nequi') ? (<>
-          <Button 
-            size="sm" 
-            variant="flat" 
-            color="warning"
-            className="w-full"
-            startContent={<FaUpload />}
-            onClick={handleUploadClick}
-          >
-            Subir comprobante de pago
-          </Button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*"
-            style={{ display: 'none' }}
-          />
-        </>
-        ) : null}
+        {(transaction.paymentMethod.toLowerCase().includes('bancolombia') || 
+         transaction.paymentMethod.toLowerCase().includes('nequi')) && (
+          <>
+            {isProofUploaded ? (
+              <Tooltip content="Comprobante subido correctamente">
+                <div className="w-full p-2 bg-green-100 border border-green-300 rounded-md flex items-center justify-center text-green-700">
+                  <FaCheckCircle className="mr-2" />
+                  Comprobante subido
+                </div>
+              </Tooltip>
+            ) : (
+              <>
+                <Button 
+                  size="sm" 
+                  variant="flat" 
+                  color="warning"
+                  className="w-full"
+                  startContent={<FaUpload />}
+                  onClick={handleUploadClick}
+                  disabled={isUploading}
+                >
+                  {isUploading ? 'Subiendo...' : 'Subir comprobante de pago'}
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
