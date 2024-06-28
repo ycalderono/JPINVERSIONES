@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
-import { Button } from "@nextui-org/button";
-import { Chip } from "@nextui-org/chip";
-import TransactionLogo from '@/public/menutransaccionlogo.svg';
 import { useSession } from 'next-auth/react';
+import TransactionDetails from './TransactionDetails';
+import TransactionHeader from './TransactionHeader';
 
 interface Transaction {
   id: number;
@@ -45,57 +44,22 @@ const TransactionList: React.FC = () => {
   return (
     <Accordion 
       className="px-0 max-w-[400px]"
-      variant="splitted"
+      variant="shadow"
       itemClasses={{
         base: "py-0 w-full",
         title: "font-normal text-medium",
-        trigger: "px-2 py-2 data-[hover=true]:bg-default-100 rounded-lg h-14 flex items-center",
+        trigger: "px-3 py-2 data-[hover=true]:bg-default-100 rounded-lg h-16 flex items-center",
         indicator: "text-medium",
-        content: "text-small px-2",
+        content: "text-small px-3",
       }}
     >
       {transactions.map((transaction) => (
         <AccordionItem
           key={transaction.id}
           aria-label={`Transacción #${transaction.id}: ${transaction.raffleType}`}
-          title={
-            <div className='flex flex-row gap-3'>
-              <div className='items-center justify-center flex'>
-                <TransactionLogo className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="flex flex-col">
-                  <span className='text-base truncate ...'>{`Transacción #${transaction.id}: ${transaction.raffleType}`}</span>
-                  <div className='flex flex-row items-center'>
-                    <span className="text-sm text-default-500">{new Date(transaction.createdAt).toLocaleDateString()}</span>
-                    <div className='ml-1 flex space-x-1'>
-                      <Chip radius='full' variant="bordered" size="sm" className={transaction.paymentStatus === 'completed' ? "text-green-500 border-green-500" : "text-yellow-500 border-yellow-500"}>
-                        {transaction.paymentStatus === 'completed' ? 'Completado' : 'Pendiente'}
-                      </Chip>
-                      {transaction.isPromotion && (
-                        <Chip radius='full' variant="bordered" size="sm" className="text-blue-500 border-blue-500">
-                          Promoción
-                        </Chip>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-          style={{
-            backgroundColor: 'rgba(113, 113, 122, 0.3)',
-          }}
+          title={<TransactionHeader transaction={transaction} />}
         >
-          <div>
-            <p>Números seleccionados: {transaction.selectedNumbers.map(n => n.number).join(', ')}</p>
-            <p>Método de pago: {transaction.paymentMethod}</p>
-            <p>Total: {transaction.totalAmount} COP</p>
-            <div className="mt-4 space-x-2">
-              <Button size="sm" color="secondary">Promociones</Button>
-              <Button size="sm" color="secondary" variant="bordered">Ver detalles</Button>
-            </div>
-          </div>
+          <TransactionDetails transaction={transaction} />
         </AccordionItem>
       ))}
     </Accordion>
