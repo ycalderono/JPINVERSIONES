@@ -71,7 +71,7 @@ export const Navbar = () => {
                                 <Link href="/login" size="lg" className="text-white">Iniciar Sesión</Link>
                             </NavbarMenuItem>
                             <NavbarMenuItem>
-                                <Link href="/promociones" size="lg" style={{ color: '#fe41f0' }}>Promociones</Link>
+                                <Link href="/landing" size="lg" style={{ color: '#fe41f0' }}>Promociones</Link>
                             </NavbarMenuItem>
                             <NavbarMenuItem>
                                 <Link href="/ayuda" size="lg" className="text-white">Ayuda</Link>
