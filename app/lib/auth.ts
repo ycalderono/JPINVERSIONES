@@ -4,58 +4,65 @@ import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
-
 export const authOptions: NextAuthOptions = {
     providers: [
-      CredentialsProvider({
-        name: "Credentials",
-        credentials: {
-          email: { label: "Email", type: "text" },
-          idNumber: { label: "Número de Identificación", type: "text" },
-        },
-        async authorize(credentials) {
-          if (!credentials?.email || !credentials?.idNumber) {
-            return null
-          }
-  
-          const user = await prisma.usuario.findFirst({
-            where: {
-              email: credentials.email,
-              idNumber: credentials.idNumber
+        CredentialsProvider({
+            name: "Credentials",
+            credentials: {
+                email: { label: "Email", type: "text" },
+                idNumber: { label: "Número de Identificación", type: "text" },
+            },
+            async authorize(credentials) {
+                if (!credentials?.email || !credentials?.idNumber) {
+                    return null
+                }
+
+                const user = await prisma.usuario.findFirst({
+                    where: {
+                        email: credentials.email,
+                        idNumber: credentials.idNumber
+                    }
+                })
+
+                if (!user) {
+                    return null
+                }
+
+                return { 
+                    id: user.id.toString(), 
+                    email: user.email, 
+                    name: user.fullName,
+                    idNumber: user.idNumber
+                }
             }
-          })
-  
-          if (!user) {
-            return null
-          }
-  
-          return { 
-            id: user.id.toString(), 
-            email: user.email, 
-            name: user.fullName,
-            idNumber: user.idNumber
-          }
-        }
-      })
+        })
     ],
     session: {
-      strategy: "jwt"
+        strategy: "jwt"
     },
     pages: {
-      signIn: "/login"
+        signIn: "/login"
     },
     callbacks: {
-      async jwt({ token, user }) {
-        if (user) {
-          token.idNumber = user.idNumber
+        async jwt({ token, user }) {
+            if (user) {
+                token.idNumber = user.idNumber
+            }
+            return token
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                session.user.idNumber = token.idNumber
+            }
+            return session
+        },
+        async redirect({ url, baseUrl }) {
+            // Si la URL es "/home", redirigir a la página de inicio
+            if (url === "/home") {
+                return `${baseUrl}/home`
+            }
+            // Por defecto redirigir a la URL base
+            return baseUrl
         }
-        return token
-      },
-      async session({ session, token }) {
-        if (session.user) {
-          session.user.idNumber = token.idNumber
-        }
-        return session
-      }
     }
-  }
+}
